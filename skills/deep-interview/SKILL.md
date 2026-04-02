@@ -10,7 +10,7 @@ level: 3
 ---
 
 <Purpose>
-Deep Interview implements Ouroboros-inspired Socratic questioning with mathematical ambiguity scoring. It replaces vague ideas with crystal-clear specifications by asking targeted questions that expose hidden assumptions, measuring clarity across weighted dimensions, and refusing to proceed until ambiguity drops below a configurable threshold (default: 20%). The output feeds into a 3-stage pipeline: **deep-interview → ralplan (consensus refinement) → autopilot (execution)**, ensuring maximum clarity at every stage.
+Deep Interview implements Ouroboros-inspired Socratic questioning with mathematical ambiguity scoring. It replaces vague ideas with crystal-clear specifications by asking targeted questions that expose hidden assumptions, measuring clarity across weighted dimensions, and refusing to proceed until ambiguity drops to zero (0% — perfect clarity across all dimensions). Each round asks multiple follow-up questions per topic to gather comprehensive context, ensuring no gaps remain. The output feeds into a 3-stage pipeline: **deep-interview → ralplan (consensus refinement) → autopilot (execution)**, ensuring maximum clarity at every stage.
 </Purpose>
 
 <Use_When>
@@ -37,13 +37,13 @@ Inspired by the [Ouroboros project](https://github.com/Q00/ouroboros) which demo
 </Why_This_Exists>
 
 <Execution_Policy>
-- Ask ONE question at a time -- never batch multiple questions
-- Target the WEAKEST clarity dimension with each question
-- Make weakest-dimension targeting explicit every round: name the weakest dimension, state its score/gap, and explain why the next question is aimed there
+- Ask MULTIPLE follow-up questions per topic in each round to gather comprehensive context -- group 2-4 related questions that probe different facets of the same dimension
+- Target the WEAKEST clarity dimension as the primary topic, but also ask follow-up questions on other dimensions that have gaps (score < 1.0)
+- Make weakest-dimension targeting explicit every round: name the weakest dimension, state its score/gap, and explain why the primary questions are aimed there
 - Gather codebase facts via `explore` agent BEFORE asking the user about them
 - For brownfield confirmation questions, cite the repo evidence that triggered the question (file path, symbol, or pattern) instead of asking the user to rediscover it
 - Score ambiguity after every answer -- display the score transparently
-- Do not proceed to execution until ambiguity ≤ threshold (default 0.2)
+- Do not proceed to execution until ambiguity = 0.0 (perfect clarity across all dimensions)
 - Allow early exit with a clear warning if ambiguity is still high
 - Persist interview state for resume across session interruptions
 - Challenge agents activate at specific round thresholds to shift perspective
@@ -54,7 +54,7 @@ When arguments include `--autoresearch`, Deep Interview becomes the zero-learnin
 
 - If no usable mission brief is present yet, start by asking: **"What should autoresearch improve or prove for this repo?"**
 - After the mission is clear, collect an evaluator command. If the user leaves it blank, infer one only when repo evidence is strong; otherwise keep interviewing until an evaluator is explicit enough to launch safely.
-- Keep the usual one-question-per-round rule, but treat **mission clarity** and **evaluator clarity** as hard readiness gates in addition to the normal ambiguity threshold.
+- Keep the usual multi-question-per-topic round structure, but treat **mission clarity** and **evaluator clarity** as hard readiness gates in addition to the normal ambiguity threshold.
 - Once ready, do **not** bridge into `omc-plan`, `autopilot`, `ralph`, or `team`. Instead run:
   - `omc autoresearch --mission "<mission>" --eval "<evaluator>" [--keep-policy <policy>] [--slug <slug>]`
 - This direct handoff is expected to detach into the real autoresearch runtime tmux session. After a successful handoff, announce the launched session and end the interview lane.
@@ -82,7 +82,7 @@ When arguments include `--autoresearch`, Deep Interview becomes the zero-learnin
     "initial_idea": "<user input>",
     "rounds": [],
     "current_ambiguity": 1.0,
-    "threshold": 0.2,
+    "threshold": 0.0,
     "codebase_context": null,
     "challenge_modes_used": [],
     "ontology_snapshots": []
@@ -92,7 +92,7 @@ When arguments include `--autoresearch`, Deep Interview becomes the zero-learnin
 
 5. **Announce the interview** to the user:
 
-> Starting deep interview. I'll ask targeted questions to understand your idea thoroughly before building anything. After each answer, I'll show your clarity score. We'll proceed to execution once ambiguity drops below 20%.
+> Starting deep interview. I'll ask multiple targeted questions per topic to understand your idea thoroughly before building anything. After each round, I'll show your clarity score. We'll proceed to execution only when ambiguity reaches 0% (perfect clarity across all dimensions).
 >
 > **Your idea:** "{initial_idea}"
 > **Project type:** {greenfield|brownfield}
@@ -102,7 +102,7 @@ When arguments include `--autoresearch`, Deep Interview becomes the zero-learnin
 
 Repeat until `ambiguity ≤ threshold` OR user exits early:
 
-### Step 2a: Generate Next Question
+### Step 2a: Generate Round Questions
 
 Build the question generation prompt with:
 - The user's original idea
@@ -111,12 +111,14 @@ Build the question generation prompt with:
 - Challenge agent mode (if activated -- see Phase 3)
 - Brownfield codebase context (if applicable)
 
-**Question targeting strategy:**
-- Identify the dimension with the LOWEST clarity score
-- Generate a question that specifically improves that dimension
-- State, in one sentence before the question, why this dimension is now the bottleneck to reducing ambiguity
+**Multi-question targeting strategy:**
+- Identify the dimension with the LOWEST clarity score as the **primary topic**
+- Generate 2-4 related questions for the primary topic that probe different facets (e.g., for Goal Clarity: what the user does, what the system responds with, what happens on failure, what the edge cases are)
+- Additionally, generate 1-2 follow-up questions for any OTHER dimension that has gaps (score < 1.0), to make progress on multiple fronts per round
+- State, in one sentence before the questions, why the primary dimension is the bottleneck to reducing ambiguity
 - Questions should expose ASSUMPTIONS, not gather feature lists
-- If the scope is still conceptually fuzzy (entities keep shifting, the user is naming symptoms, or the core noun is unstable), switch to an ontology-style question that asks what the thing fundamentally IS before returning to feature/detail questions
+- If the scope is still conceptually fuzzy (entities keep shifting, the user is naming symptoms, or the core noun is unstable), switch to ontology-style questions that ask what the thing fundamentally IS before returning to feature/detail questions
+- Group questions logically under their dimension heading so the user can answer systematically
 
 **Question styles by dimension:**
 | Dimension | Question Style | Example |
@@ -127,17 +129,25 @@ Build the question generation prompt with:
 | Context Clarity (brownfield) | "How does this fit?" | "I found JWT auth middleware in `src/auth/` (pattern: passport + JWT). Should this feature extend that path or intentionally diverge from it?" |
 | Scope-fuzzy / ontology stress | "What IS the core thing here?" | "You have named Tasks, Projects, and Workspaces across the last rounds. Which one is the core entity, and which are supporting views or containers?" |
 
-### Step 2b: Ask the Question
+### Step 2b: Ask the Questions
 
-Use `AskUserQuestion` with the generated question. Present it clearly with the current ambiguity context:
+Present all round questions to the user with the current ambiguity context. Use `AskUserQuestion` for the primary question, and present the full set in conversation:
 
 ```
-Round {n} | Targeting: {weakest_dimension} | Why now: {one_sentence_targeting_rationale} | Ambiguity: {score}%
+Round {n} | Primary Target: {weakest_dimension} | Why now: {one_sentence_targeting_rationale} | Ambiguity: {score}%
 
-{question}
+### {Primary Dimension} (score: {score})
+1. {primary question 1}
+2. {primary question 2}
+3. {primary follow-up question}
+
+### {Secondary Dimension} (score: {score})
+4. {secondary question}
+
+Please answer each question. You can answer inline or respond to them one at a time.
 ```
 
-Options should include contextually relevant choices plus free-text.
+Options for AskUserQuestion should include contextually relevant choices plus free-text for comprehensive answers.
 
 ### Step 2c: Score Ambiguity
 
@@ -383,7 +393,7 @@ Stage 1: Deep Interview          Stage 2: Ralplan                Stage 3: Autopi
 │ Ambiguity scoring   │───>│ Architect reviews         │───>│ Phase 3: QA cycling  │
 │ Challenge agents    │    │ Critic validates          │    │ Phase 4: Validation  │
 │ Spec crystallization│    │ Loop until consensus      │    │ Phase 5: Cleanup     │
-│ Gate: ≤20% ambiguity│    │ ADR + RALPLAN-DR summary  │    │                      │
+│ Gate: 0% ambiguity  │    │ ADR + RALPLAN-DR summary  │    │                      │
 └─────────────────────┘    └───────────────────────────┘    └──────────────────────┘
 Output: spec.md            Output: consensus-plan.md        Output: working code
 ```
@@ -412,15 +422,19 @@ Skipping any stage is possible but reduces quality assurance:
 
 <Examples>
 <Good>
-Targeting weakest dimension:
+Multi-question round targeting weakest dimension with follow-ups:
 ```
-Scores: Goal=0.9, Constraints=0.4, Criteria=0.7
-Next question targets Constraints (lowest at 0.4):
-"You mentioned this should 'work on mobile'. Does that mean a native app,
-a responsive web app, or a PWA? And are there specific devices or OS versions
-you need to support?"
+Round 4 | Primary Target: Constraints (0.4) | Why now: boundaries are the biggest gap — goal and criteria are clearer | Ambiguity: 32%
+
+### Constraints (score: 0.4)
+1. You mentioned this should 'work on mobile'. Does that mean a native app, a responsive web app, or a PWA?
+2. Are there specific devices or OS versions you need to support?
+3. What about offline functionality — should it work without internet, or is connectivity assumed?
+
+### Success Criteria (score: 0.7)
+4. You said "fast search results" — can you quantify that? Under 200ms? Under 1 second?
 ```
-Why good: Identifies weakest dimension, explains why it is now the bottleneck, asks a specific question to improve it, and doesn't batch multiple topics.
+Why good: Groups 3 related constraint questions to thoroughly probe that dimension in one round, plus picks up a gap in success criteria. The user gets a comprehensive picture of what's still unclear.
 </Good>
 
 <Good>
@@ -452,14 +466,14 @@ Why good: Challenges a specific assumption (scale requirement) that could dramat
 Early exit with warning:
 ```
 User: "That's enough, just build it"
-System: "Current ambiguity is 35% (threshold: 20%). Areas still unclear:
-  - Success Criteria: 0.5 (How do we verify the search ranking algorithm works correctly?)
-  - Constraints: 0.6 (No performance targets defined yet)
+System: "Current ambiguity is 12% (threshold: 0%). Areas still unclear:
+  - Success Criteria: 0.85 (How do we verify the search ranking algorithm works correctly?)
+  - Constraints: 0.90 (No performance targets defined yet)
 
-Proceeding may require rework. Continue anyway?"
-  [Yes, proceed] [Ask 2-3 more questions] [Cancel]
+Proceeding may require rework — the threshold requires 0% ambiguity (perfect clarity). Continue anyway?"
+  [Yes, proceed with current clarity] [Ask a few more rounds] [Cancel]
 ```
-Why good: Respects user's desire to stop but transparently shows the risk.
+Why good: Respects user's desire to stop but transparently shows the risk against the strict 0% threshold.
 </Good>
 
 <Good>
@@ -486,12 +500,12 @@ Why good: Uses ontology-style questioning to stabilize the core noun before dril
 </Good>
 
 <Bad>
-Batching multiple questions:
+Scattering unrelated questions across dimensions without grouping:
 ```
 "What's the target audience? And what tech stack? And how should auth work?
 Also, what's the deployment target?"
 ```
-Why bad: Four questions at once — causes shallow answers and makes scoring inaccurate.
+Why bad: Four questions across four different dimensions with no grouping or context. Questions should be grouped by dimension (2-4 per dimension) and focused on the weakest dimension first, with follow-ups on secondary gaps.
 </Bad>
 
 <Bad>
@@ -547,7 +561,7 @@ Optional settings in `.claude/settings.json`:
 {
   "omc": {
     "deepInterview": {
-      "ambiguityThreshold": 0.2,
+      "ambiguityThreshold": 0.0,
       "maxRounds": 20,
       "softWarningRounds": 10,
       "minRoundsBeforeExit": 3,
@@ -582,7 +596,7 @@ The recommended execution path chains three quality gates:
 
 ```
 /deep-interview "vague idea"
-  → Socratic Q&A until ambiguity ≤ 20%
+  → Socratic Q&A until ambiguity = 0%
   → Spec written to .omc/specs/deep-interview-{slug}.md
   → User selects "Ralplan → Autopilot"
   → /omc-plan --consensus --direct (spec as input, skip interview)
@@ -639,8 +653,9 @@ Each mode is used exactly once, then normal Socratic questioning resumes. Modes 
 
 | Score Range | Meaning | Action |
 |-------------|---------|--------|
-| 0.0 - 0.1 | Crystal clear | Proceed immediately |
-| 0.1 - 0.2 | Clear enough | Proceed (default threshold) |
+| 0.0 | Perfect clarity | Proceed (default threshold — all dimensions 1.0) |
+| 0.01 - 0.1 | Near-perfect | Almost there — probe remaining micro-gaps |
+| 0.1 - 0.2 | Clear with minor gaps | Continue — focus on dimensions below 1.0 |
 | 0.2 - 0.4 | Some gaps | Continue interviewing |
 | 0.4 - 0.6 | Significant gaps | Focus on weakest dimensions |
 | 0.6 - 0.8 | Very unclear | May need reframing (Ontologist) |

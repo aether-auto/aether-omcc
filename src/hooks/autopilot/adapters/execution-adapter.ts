@@ -31,107 +31,145 @@ export const executionAdapter: PipelineStageAdapter = {
     const isTeam = context.config.execution === "team";
 
     if (isTeam) {
-      return `## PIPELINE STAGE: EXECUTION (Team Mode)
+      return `## PIPELINE STAGE: EXECUTION (Team Mode — TODO-Driven)
 
-Execute the implementation plan using multi-worker team execution.
+Execute TODOs iteratively in dependency order using multi-worker team execution.
 
 ### Setup
 
-Read the implementation plan at: \`${planPath}\`
+1. Read the TODO index at: \`.omc/todos/INDEX.md\` — this is the dependency DAG
+2. Read the implementation plan at: \`${planPath}\` for additional context
+3. If \`.ui-specs/\` exists, note it for frontend agents
+4. If \`.omc/research/\` exists, note it for reference implementations
 
-### Team Execution
+### TODO-Driven Execution Loop
 
-Use the Team orchestrator to execute tasks in parallel:
+Process TODOs in dependency order, dispatching independent TODOs in parallel:
 
-1. **Create team** with TeamCreate
-2. **Create tasks** from the implementation plan using TaskCreate
-3. **Spawn executor teammates** using Task with \`team_name\` parameter
-4. **Monitor progress** as teammates complete tasks
-5. **Coordinate** dependencies between tasks
+\`\`\`
+REPEAT:
+  1. Read .omc/todos/INDEX.md → identify all TODOs with status: pending
+  2. Find UNBLOCKED TODOs: pending TODOs whose depends_on are all done
+  3. If no unblocked TODOs and some still pending → report circular dependency
+  4. If all TODOs are done → emit completion signal
+  5. DISPATCH all unblocked TODOs IN PARALLEL:
+     - Create team with TeamCreate
+     - For each unblocked TODO: read .omc/todos/TODO-NNN.md
+     - Spawn specialist agents based on scope tags:
+       [frontend] → frontend-dev | [backend] → backend-dev | [database] → db-dev
+       Multiple scopes → spawn each specialist IN PARALLEL
+     - Each agent receives: acceptance criteria, description, reference implementations
+  6. VERIFY each completed TODO against its acceptance criteria
+  7. Update TODO frontmatter: status: done (or status: blocked after 3 failures)
+  8. Update .omc/todos/INDEX.md with new statuses
+  9. GOTO step 1 (next iteration picks up newly unblocked TODOs)
+\`\`\`
 
 ### Agent Selection
 
-Match agent types to task scope and complexity:
+Match agent types to TODO scope tags:
 
-**Specialist Agents (prefer for full-stack features):**
-- UI, pages, components, styles, client state: \`frontend-dev\` with \`model="sonnet"\`
-- API routes, services, middleware, business logic: \`backend-dev\` with \`model="sonnet"\`
-- Schema, migrations, seeds, queries: \`db-dev\` with \`model="sonnet"\`
+**Specialist Agents (prefer for scoped TODOs):**
+- \`[frontend]\` scope: \`frontend-dev\` with \`model="sonnet"\`
+- \`[backend]\` scope: \`backend-dev\` with \`model="sonnet"\`
+- \`[database]\` scope: \`db-dev\` with \`model="sonnet"\`
 
 **General Agents:**
-- Simple tasks (single file, config): \`executor\` with \`model="haiku"\`
-- Standard implementation (non-scoped): \`executor\` with \`model="sonnet"\`
-- Complex work (architecture, refactoring): \`executor\` with \`model="opus"\`
-- Build issues: \`debugger\` with \`model="sonnet"\`
-- Test creation: \`test-engineer\` with \`model="sonnet"\`
-- UI work (design-focused): \`designer\` with \`model="sonnet"\`
+- \`[config]\` or mixed scope: \`executor\` with \`model="sonnet"\`
+- Simple single-file tasks: \`executor\` with \`model="haiku"\`
+- Complex cross-cutting: \`executor\` with \`model="opus"\`
+- Build/test failures: \`debugger\` with \`model="sonnet"\`
 
-### Team Dispatch for Full-Stack Tasks
+### Failure Handling
 
-When a task spans multiple layers (Data + API + UI), spawn specialist agents IN PARALLEL:
-1. Analyze the task scope sections (Data/API/UI)
-2. Spawn \`db-dev\` for Data scope, \`backend-dev\` for API scope, \`frontend-dev\` for UI scope
-3. Each agent receives the relevant TODO details via SendMessage
-4. Each agent implements their scope independently and reports back
-5. After all agents complete, run integration tests
-6. If tests fail, spawn \`debugger\` to diagnose cross-layer issues
+- If a TODO fails 3 times: mark \`status: blocked\`, log error, continue with other TODOs
+- If a blocked TODO is on the critical path: report to user via AskUserQuestion
+- If all remaining TODOs are blocked: stop and present blockers
 
-### Progress Tracking
+### Progress Reporting
 
-Track progress through the task list:
-- Mark tasks \`in_progress\` when starting
-- Mark tasks \`completed\` when verified
-- Add discovered tasks as they emerge
+After each loop iteration:
+\`\`\`
+Execution Progress: {completed}/{total} TODOs
+  Completed this round: TODO-003, TODO-005
+  Now unblocked: TODO-008, TODO-009
+  Blocked: {count} | Remaining: {count}
+\`\`\`
 
 ### Completion
 
-When ALL tasks from the plan are implemented:
+When ALL TODOs in .omc/todos/ have status: done (or blocked with user acknowledgment):
 
 Signal: ${EXECUTION_COMPLETION_SIGNAL}
 `;
     }
 
     // Solo execution mode
-    return `## PIPELINE STAGE: EXECUTION (Solo Mode)
+    return `## PIPELINE STAGE: EXECUTION (Solo Mode — TODO-Driven)
 
-Execute the implementation plan using single-session execution.
+Execute TODOs iteratively in dependency order using single-session execution.
 
 ### Setup
 
-Read the implementation plan at: \`${planPath}\`
+1. Read the TODO index at: \`.omc/todos/INDEX.md\` — this is the dependency DAG
+2. Read the implementation plan at: \`${planPath}\` for additional context
+3. If \`.ui-specs/\` exists, note it for frontend tasks
+4. If \`.omc/research/\` exists, note it for reference implementations
 
-### Solo Execution
+### TODO-Driven Execution Loop
 
-Execute tasks sequentially (or with limited parallelism via background agents):
-
-1. Read and understand each task from the plan
-2. Execute tasks in dependency order
-3. Use executor agents for independent tasks that can run in parallel
-4. Track progress in the TODO list
-
-### Agent Spawning
+Process TODOs in dependency order, with limited parallelism via background agents:
 
 \`\`\`
-// For simple tasks (single file, straightforward logic)
-Task(subagent_type="oh-my-claudecode:executor", model="haiku", prompt="...")
-
-// For standard implementation (feature, multiple methods)
-Task(subagent_type="oh-my-claudecode:executor", model="sonnet", prompt="...")
-
-// For complex work (architecture, debugging, refactoring)
-Task(subagent_type="oh-my-claudecode:executor", model="opus", prompt="...")
+REPEAT:
+  1. Read .omc/todos/INDEX.md → identify all TODOs with status: pending
+  2. Find UNBLOCKED TODOs: pending TODOs whose depends_on are all done
+  3. If no unblocked TODOs and some still pending → report circular dependency
+  4. If all TODOs are done → emit completion signal
+  5. For each unblocked TODO:
+     - Read .omc/todos/TODO-NNN.md for full details
+     - Spawn agent based on scope: frontend-dev, backend-dev, db-dev, or executor
+     - Run independent TODOs as background agents for limited parallelism
+  6. VERIFY each completed TODO against its acceptance criteria
+  7. Update TODO frontmatter: status: done (or status: blocked after 3 failures)
+  8. Update .omc/todos/INDEX.md
+  9. GOTO step 1
 \`\`\`
 
-### Progress Tracking
+### Agent Spawning by TODO Scope
 
-Update TODO list as tasks complete:
-- Mark task \`in_progress\` when starting
-- Mark task \`completed\` when done
-- Add new tasks if discovered during implementation
+\`\`\`
+// [frontend] scope
+Task(subagent_type="aether-omcc:frontend-dev", model="sonnet", prompt="Implement TODO-NNN: ...")
+
+// [backend] scope
+Task(subagent_type="aether-omcc:backend-dev", model="sonnet", prompt="Implement TODO-NNN: ...")
+
+// [database] scope
+Task(subagent_type="aether-omcc:db-dev", model="sonnet", prompt="Implement TODO-NNN: ...")
+
+// [config] or complex cross-cutting
+Task(subagent_type="aether-omcc:executor", model="opus", prompt="Implement TODO-NNN: ...")
+\`\`\`
+
+### Failure Handling
+
+- If a TODO fails 3 times: mark \`status: blocked\`, log error, continue with others
+- If blocked TODO is on the critical path: report to user
+
+### Progress Reporting
+
+After each loop iteration:
+\`\`\`
+Execution Progress: {completed}/{total} TODOs
+  Completed this round: TODO-NNN
+  Now unblocked: TODO-NNN
+  Blocked: {count} | Remaining: {count}
+\`\`\`
 
 ### Completion
 
-When ALL tasks from the plan are implemented:
+When ALL TODOs in .omc/todos/ have status: done (or blocked with user acknowledgment):
 
 Signal: ${EXECUTION_COMPLETION_SIGNAL}
 `;

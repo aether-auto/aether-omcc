@@ -49,15 +49,18 @@ Most non-trivial software tasks require coordinated phases: understanding requir
    - Critic (Opus): Validate plan
    - Output: `.omc/plans/autopilot-impl.md`
 
-3. **Phase 2 - Execution**: Implement the plan using Ralph + Ultrawork
-   - Executor (Haiku): Simple tasks
-   - Executor (Sonnet): Standard tasks
-   - Executor (Opus): Complex tasks
-   - Frontend Dev (Sonnet): UI, pages, components, styles
-   - Backend Dev (Sonnet): API routes, services, middleware
-   - DB Dev (Sonnet): Schema, migrations, seeds, queries
-   - Run independent tasks in parallel
-   - See **Agent Team Composition for Execution** below
+3. **Phase 2 - Execution**: Implement TODOs iteratively and in parallel
+   - **Read `.omc/todos/INDEX.md`** to get the full dependency DAG and TODO inventory
+   - **Identify unblocked TODOs**: TODOs whose dependencies are all `status: done` (or have no dependencies)
+   - **Dispatch all unblocked TODOs in parallel** using agent teams:
+     - Read each TODO file (`.omc/todos/TODO-NNN.md`) for scope, acceptance criteria, and reference implementations
+     - Match agent type to TODO scope: `frontend-dev` for UI, `backend-dev` for API, `db-dev` for Data, `executor` for cross-cutting
+     - For full-stack TODOs (Data + API + UI sections): spawn `db-dev`, `backend-dev`, and `frontend-dev` IN PARALLEL
+     - Each agent receives the TODO's acceptance criteria and reference implementations
+   - **Mark TODOs complete** when all acceptance criteria pass: update frontmatter `status: done`
+   - **Repeat**: After a batch completes, re-read INDEX.md to find newly unblocked TODOs
+   - **Continue until all TODOs are `status: done`**
+   - See **Agent Team Composition for Execution** and **TODO-Driven Execution Loop** below
 
 4. **Phase 3 - QA**: Cycle until all tests pass (UltraQA mode)
    - Build, lint, test, fix failures
@@ -107,6 +110,67 @@ When executing tasks, prefer agent teams over solo execution for full-stack feat
 - Agents report completion status back via SendMessage
 - If an agent encounters blocking issues, it reports via SendMessage for team lead to resolve
 </Agent_Team_Composition>
+
+<TODO_Driven_Execution_Loop>
+### TODO-Driven Execution Loop
+
+Phase 2 is driven entirely by the `.omc/todos/` directory. The execution loop processes TODOs in dependency order, dispatching independent TODOs in parallel.
+
+**Loop Algorithm:**
+
+```
+1. READ .omc/todos/INDEX.md → parse dependency DAG and all TODO statuses
+2. IDENTIFY unblocked TODOs:
+   - status: pending
+   - all entries in depends_on[] have status: done (or depends_on is empty)
+3. If no unblocked TODOs remain AND some TODOs are still pending → ERROR: circular dependency or blocked chain
+4. If all TODOs have status: done → EXIT loop, emit PIPELINE_EXECUTION_COMPLETE
+5. DISPATCH all unblocked TODOs in parallel:
+   For each unblocked TODO:
+   a. Read .omc/todos/TODO-NNN.md for full details
+   b. Determine agent type from scope tags:
+      - [frontend] → frontend-dev (Sonnet)
+      - [backend] → backend-dev (Sonnet)
+      - [database] → db-dev (Sonnet)
+      - [config] or mixed → executor (Sonnet/Opus based on complexity)
+      - Multiple scope tags → spawn specialist agents IN PARALLEL
+   c. Send each agent:
+      - The TODO's acceptance criteria (checkboxes to satisfy)
+      - The TODO's description (Data/API/UI sections)
+      - The TODO's reference implementations (if present)
+      - Path to .ui-specs/pages/ (if frontend scope and UI specs exist)
+      - Path to .omc/research/ findings (if relevant research exists)
+   d. Agent implements, runs tests, reports completion via SendMessage
+6. VERIFY each completed TODO:
+   - Run relevant tests for the TODO's scope
+   - Check acceptance criteria against implementation
+   - If all criteria pass: update TODO frontmatter to status: done
+   - If criteria fail: retry with debugger agent (max 3 attempts per TODO)
+7. UPDATE .omc/todos/INDEX.md with new statuses
+8. GOTO step 1 (next iteration picks up newly unblocked TODOs)
+```
+
+**Parallel Dispatch Rules:**
+- All unblocked TODOs in a tier are dispatched simultaneously
+- TODOs with no dependencies form the first tier (foundation tasks)
+- Each subsequent tier unlocks after its dependencies complete
+- Within a full-stack TODO, `db-dev` → `backend-dev` → `frontend-dev` can run in parallel since they work on different layers
+
+**Failure Handling:**
+- If a TODO fails 3 times: mark as `status: blocked`, log the error, continue with other TODOs
+- If a blocked TODO is in the critical path (other TODOs depend on it): report to user via AskUserQuestion
+- If all remaining TODOs are blocked: stop and present the blockers to the user
+
+**Progress Reporting:**
+After each iteration of the loop, report:
+```
+Execution Progress: {completed}/{total} TODOs
+  Completed this round: TODO-003, TODO-005, TODO-007
+  Now unblocked: TODO-008, TODO-009
+  Blocked: TODO-004 (failed 3x: {error summary})
+  Remaining: {count} TODOs
+```
+</TODO_Driven_Execution_Loop>
 
 <Tool_Usage>
 - Use `Task(subagent_type="oh-my-claudecode:architect", ...)` for Phase 4 architecture validation
