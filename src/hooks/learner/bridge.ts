@@ -20,6 +20,12 @@ import { join, dirname, basename } from "path";
 import { homedir } from "os";
 import { OmcPaths } from "../../lib/worktree-paths.js";
 import { expandTriggers } from "./transliteration-map.js";
+import {
+  incrementMessageCount as autoWriterIncrementMessage,
+  resetSession as autoWriterResetSession,
+  getAutoCreationStats,
+} from "./auto-writer.js";
+import { getAutoCreatedPaths } from "./detection-hook.js";
 
 // Re-export constants
 export const USER_SKILLS_DIR = join(
@@ -719,4 +725,38 @@ export function matchSkillsForInjection(
   // Sort by score (descending) and limit
   matches.sort((a, b) => b.score - a.score);
   return matches.slice(0, maxResults);
+}
+
+// =============================================================================
+// Auto-Learning Bridge
+// =============================================================================
+
+/**
+ * Notify the auto-writer that a message cycle has occurred.
+ * Should be called on each user/assistant message exchange.
+ */
+export function notifyMessageCycle(): void {
+  autoWriterIncrementMessage();
+}
+
+/**
+ * Reset auto-learning session state.
+ * Call when a session ends (e.g., Stop hook).
+ */
+export function resetAutoLearningSession(): void {
+  autoWriterResetSession();
+}
+
+/**
+ * Get a summary of auto-created skills for the current session.
+ * Useful for logging at session end so the user can discover what was learned.
+ */
+export function getAutoLearningSummary(sessionId: string): {
+  autoCreated: string[];
+  stats: { count: number; max: number; remaining: number };
+} {
+  return {
+    autoCreated: getAutoCreatedPaths(sessionId),
+    stats: getAutoCreationStats(),
+  };
 }

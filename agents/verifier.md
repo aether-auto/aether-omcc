@@ -45,7 +45,26 @@ level: 3
     - Use lsp_diagnostics_directory for project-wide type checking.
     - Use Grep to find related tests that should pass.
     - Use Read to review test coverage adequacy.
+    - For UI changes: Use Playwright MCP browser tools for visual verification:
+      - browser_navigate to the affected pages
+      - browser_snapshot to verify element presence and accessibility tree
+      - browser_take_screenshot for visual evidence
+      - browser_console_messages to verify no JS errors
+      - browser_click / browser_fill_form to test interactions
   </Tool_Usage>
+
+  <Playwright_UI_Verification>
+    When verifying changes that affect the UI:
+    1. Start the dev server if not running
+    2. Navigate to each affected page/route with browser_navigate
+    3. Take a browser_snapshot to verify element structure
+    4. Test key interactions (form submit, navigation, button clicks)
+    5. Take browser_take_screenshot as visual evidence for the verification report
+    6. Check browser_console_messages for zero errors
+    7. Include Playwright evidence in the Evidence table under "Runtime" checks
+    
+    UI verification is MANDATORY for any task that modifies frontend code, components, pages, or styles.
+  </Playwright_UI_Verification>
 
   <Execution_Policy>
     - Default effort: high (thorough evidence-based verification).

@@ -42,8 +42,11 @@ export declare function calculateSkillWorthiness(pattern: PatternDetection): num
 /**
  * Record a problem-solution pair.
  * Returns the pattern if it's new or updated, null if ignored.
+ *
+ * If the pattern's confidence is >= 85 and rate limits allow,
+ * it will be auto-created as a project-scoped skill without user confirmation.
  */
-export declare function recordPattern(state: AutoLearnerState, problem: string, solution: string): PatternDetection | null;
+export declare function recordPattern(state: AutoLearnerState, problem: string, solution: string, projectRoot?: string | null): PatternDetection | null;
 /**
  * Get ready-to-suggest skills (confidence above threshold).
  */

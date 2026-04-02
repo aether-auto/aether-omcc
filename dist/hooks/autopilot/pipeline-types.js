@@ -3,13 +3,16 @@
  *
  * Type definitions for the configurable pipeline orchestrator.
  * The pipeline unifies autopilot/ultrawork/ultrapilot into a single
- * configurable sequence: RALPLAN -> EXECUTION -> RALPH -> QA.
+ * configurable sequence: RALPLAN -> RESEARCH -> UI-SPECS -> TODOS -> EXECUTION -> RALPH -> QA.
  *
  * @see https://github.com/Yeachan-Heo/oh-my-claudecode/issues/1130
  */
 /** The canonical stage execution order */
 export const STAGE_ORDER = [
     "ralplan",
+    "research",
+    "ui-specs",
+    "todos",
     "execution",
     "ralph",
     "qa",

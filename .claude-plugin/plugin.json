@@ -1,12 +1,12 @@
 {
-  "name": "oh-my-claudecode",
-  "version": "4.9.3",
-  "description": "Multi-agent orchestration system for Claude Code",
+  "name": "aether-omcc",
+  "version": "5.0.0",
+  "description": "Extended multi-agent orchestration system for Claude Code with UI specs, deep research, exhaustive todos, and auto-learning",
   "author": {
-    "name": "oh-my-claudecode contributors"
+    "name": "aether-auto"
   },
-  "repository": "https://github.com/Yeachan-Heo/oh-my-claudecode",
-  "homepage": "https://github.com/Yeachan-Heo/oh-my-claudecode",
+  "repository": "https://github.com/aether-auto/aether-omcc",
+  "homepage": "https://github.com/aether-auto/aether-omcc",
   "license": "MIT",
   "keywords": [
     "claude-code",

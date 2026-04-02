@@ -6,6 +6,9 @@
 
 import { detectExtractableMoment, shouldPromptExtraction, generateExtractionPrompt } from './detector.js';
 import { isLearnerEnabled } from './index.js';
+import { shouldAutoCreate, autoCreateSkill, incrementMessageCount, type AutoCreatablePattern } from './auto-writer.js';
+import { extractTriggers } from './auto-learner.js';
+import { DEBUG_ENABLED } from './constants.js';
 import type { DetectionResult } from './detector.js';
 
 /**
@@ -33,7 +36,25 @@ interface SessionDetectionState {
   messagesSincePrompt: number;
   lastDetection: DetectionResult | null;
   promptedCount: number;
+  /** Track consecutive tool failures for auto-fix detection */
+  consecutiveToolFailures: number;
+  /** Auto-created skill paths this session */
+  autoCreatedPaths: string[];
 }
+
+/**
+ * Workaround signal phrases that indicate non-obvious solutions.
+ */
+const WORKAROUND_SIGNALS = [
+  'instead of',
+  'workaround',
+  'the trick is',
+  'counterintuitively',
+  'surprisingly',
+  'unexpectedly',
+  'turned out',
+  'it turns out',
+];
 
 const sessionStates = new Map<string, SessionDetectionState>();
 
@@ -46,6 +67,8 @@ function getSessionState(sessionId: string): SessionDetectionState {
       messagesSincePrompt: 0,
       lastDetection: null,
       promptedCount: 0,
+      consecutiveToolFailures: 0,
+      autoCreatedPaths: [],
     });
   }
   return sessionStates.get(sessionId)!;
@@ -59,7 +82,8 @@ export function processResponseForDetection(
   assistantMessage: string,
   userMessage: string | undefined,
   sessionId: string,
-  config: Partial<DetectionConfig> = {}
+  config: Partial<DetectionConfig> = {},
+  projectRoot?: string | null,
 ): string | null {
   const mergedConfig = { ...DEFAULT_CONFIG, ...config };
 
@@ -70,16 +94,61 @@ export function processResponseForDetection(
   const state = getSessionState(sessionId);
   state.messagesSincePrompt++;
 
-  // Check cooldown
-  if (state.messagesSincePrompt < mergedConfig.promptCooldown) {
-    return null;
-  }
+  // Increment auto-writer message counter
+  incrementMessageCount();
 
   // Detect extractable moment
   const detection = detectExtractableMoment(assistantMessage, userMessage);
   state.lastDetection = detection;
 
-  // Check if we should prompt
+  // Boost confidence for workaround signals
+  let adjustedConfidence = detection.confidence;
+  if (detection.detected) {
+    const lowerMessage = assistantMessage.toLowerCase();
+    let workaroundSignalCount = 0;
+    for (const signal of WORKAROUND_SIGNALS) {
+      if (lowerMessage.includes(signal)) {
+        workaroundSignalCount++;
+      }
+    }
+    if (workaroundSignalCount >= 2) {
+      adjustedConfidence = Math.min(adjustedConfidence + 10, 100);
+    }
+  }
+
+  // Auto-create if confidence is high enough and rate limits allow
+  if (detection.detected && shouldAutoCreate(adjustedConfidence) && projectRoot) {
+    const pattern: AutoCreatablePattern = {
+      id: `auto-${Date.now().toString(36)}`,
+      problem: userMessage || assistantMessage.slice(0, 200),
+      solution: assistantMessage,
+      confidence: adjustedConfidence,
+      occurrences: 1,
+      firstSeen: Date.now(),
+      lastSeen: Date.now(),
+      suggestedTriggers: detection.suggestedTriggers.length > 0
+        ? detection.suggestedTriggers
+        : extractTriggers(userMessage || '', assistantMessage),
+      suggestedTags: [],
+    };
+
+    const createdPath = autoCreateSkill(pattern, projectRoot);
+    if (createdPath) {
+      state.autoCreatedPaths.push(createdPath);
+      if (DEBUG_ENABLED) {
+        console.log('[learner:detection-hook] Auto-created skill at: %s', createdPath);
+      }
+      // Don't prompt the user — auto-creation is silent
+      return null;
+    }
+  }
+
+  // Check cooldown for suggestion prompting
+  if (state.messagesSincePrompt < mergedConfig.promptCooldown) {
+    return null;
+  }
+
+  // Check if we should prompt (existing behavior for lower confidence)
   if (shouldPromptExtraction(detection, mergedConfig.promptThreshold)) {
     state.messagesSincePrompt = 0;
     state.promptedCount++;
@@ -87,6 +156,34 @@ export function processResponseForDetection(
   }
 
   return null;
+}
+
+/**
+ * Record a tool use failure (for auto-fix pattern detection).
+ * Call when a tool use fails (PostToolUseFailure).
+ */
+export function recordToolFailure(sessionId: string): void {
+  const state = getSessionState(sessionId);
+  state.consecutiveToolFailures++;
+}
+
+/**
+ * Record a tool use success (for auto-fix pattern detection).
+ * Call when a tool use succeeds after failures (PostToolUse).
+ * Returns true if this was a failure-then-success sequence.
+ */
+export function recordToolSuccess(sessionId: string): boolean {
+  const state = getSessionState(sessionId);
+  const hadFailures = state.consecutiveToolFailures > 0;
+  state.consecutiveToolFailures = 0;
+  return hadFailures;
+}
+
+/**
+ * Get list of auto-created skill paths for a session.
+ */
+export function getAutoCreatedPaths(sessionId: string): string[] {
+  return sessionStates.get(sessionId)?.autoCreatedPaths ?? [];
 }
 
 /**

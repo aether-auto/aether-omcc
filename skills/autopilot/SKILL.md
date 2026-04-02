@@ -53,7 +53,11 @@ Most non-trivial software tasks require coordinated phases: understanding requir
    - Executor (Haiku): Simple tasks
    - Executor (Sonnet): Standard tasks
    - Executor (Opus): Complex tasks
+   - Frontend Dev (Sonnet): UI, pages, components, styles
+   - Backend Dev (Sonnet): API routes, services, middleware
+   - DB Dev (Sonnet): Schema, migrations, seeds, queries
    - Run independent tasks in parallel
+   - See **Agent Team Composition for Execution** below
 
 4. **Phase 3 - QA**: Cycle until all tests pass (UltraQA mode)
    - Build, lint, test, fix failures
@@ -70,6 +74,39 @@ Most non-trivial software tasks require coordinated phases: understanding requir
    - Remove `.omc/state/autopilot-state.json`, `ralph-state.json`, `ultrawork-state.json`, `ultraqa-state.json`
    - Run `/oh-my-claudecode:cancel` for clean exit
 </Steps>
+
+<Agent_Team_Composition>
+### Agent Team Composition for Execution
+
+When executing tasks, prefer agent teams over solo execution for full-stack features:
+
+**Agent Selection by Task Scope:**
+| Task Scope | Agent | Model |
+|-----------|-------|-------|
+| UI, pages, components, styles, client state | `frontend-dev` | Sonnet |
+| API routes, services, middleware, business logic | `backend-dev` | Sonnet |
+| Schema, migrations, seeds, queries | `db-dev` | Sonnet |
+| Complex cross-cutting architecture | `executor` | Opus |
+| Simple config, docs, single-file changes | `executor` | Haiku |
+| Build/test failures | `debugger` | Sonnet |
+
+**Team Dispatch Pattern for Full-Stack Tasks:**
+1. Analyze the TODO's scope sections (Data/API/UI)
+2. Spawn the appropriate dev agents IN PARALLEL:
+   - If Data section: spawn `db-dev`
+   - If API section: spawn `backend-dev`
+   - If UI section: spawn `frontend-dev`
+3. Each agent reads the failing tests (if TDD) or acceptance criteria
+4. Each agent implements their scope independently
+5. Wait for all agents to complete
+6. Run integration tests to verify cross-agent work
+7. If tests fail, spawn `debugger` agent to diagnose
+
+**Communication:**
+- Team lead sends TODO details to each agent via SendMessage
+- Agents report completion status back via SendMessage
+- If an agent encounters blocking issues, it reports via SendMessage for team lead to resolve
+</Agent_Team_Composition>
 
 <Tool_Usage>
 - Use `Task(subagent_type="oh-my-claudecode:architect", ...)` for Phase 4 architecture validation

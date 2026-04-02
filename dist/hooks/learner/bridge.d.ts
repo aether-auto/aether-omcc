@@ -82,4 +82,26 @@ export declare function matchSkillsForInjection(prompt: string, projectRoot: str
     fuzzyThreshold?: number;
     maxResults?: number;
 }): MatchedSkill[];
+/**
+ * Notify the auto-writer that a message cycle has occurred.
+ * Should be called on each user/assistant message exchange.
+ */
+export declare function notifyMessageCycle(): void;
+/**
+ * Reset auto-learning session state.
+ * Call when a session ends (e.g., Stop hook).
+ */
+export declare function resetAutoLearningSession(): void;
+/**
+ * Get a summary of auto-created skills for the current session.
+ * Useful for logging at session end so the user can discover what was learned.
+ */
+export declare function getAutoLearningSummary(sessionId: string): {
+    autoCreated: string[];
+    stats: {
+        count: number;
+        max: number;
+        remaining: number;
+    };
+};
 //# sourceMappingURL=bridge.d.ts.map

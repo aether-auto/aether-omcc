@@ -9,7 +9,7 @@ export interface DetectionResult {
     /** Confidence score (0-100) */
     confidence: number;
     /** Type of pattern detected */
-    patternType: 'problem-solution' | 'technique' | 'workaround' | 'optimization' | 'best-practice';
+    patternType: 'problem-solution' | 'technique' | 'workaround' | 'optimization' | 'best-practice' | 'auto-fix';
     /** Suggested trigger keywords */
     suggestedTriggers: string[];
     /** Reason for detection */

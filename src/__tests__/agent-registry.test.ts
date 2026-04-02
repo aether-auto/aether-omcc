@@ -42,12 +42,12 @@ describe('Agent Registry Validation', () => {
   test('agent count matches documentation', () => {
     const agentsDir = path.join(__dirname, '../../agents');
     const promptFiles = fs.readdirSync(agentsDir).filter((file) => file.endsWith('.md') && file !== 'AGENTS.md');
-    expect(promptFiles.length).toBe(19);
+    expect(promptFiles.length).toBe(23);
   });
 
-  test('agent count is always 19 (no conditional agents)', () => {
+  test('agent count is always 23 (no conditional agents)', () => {
     const agents = getAgentDefinitions();
-    expect(Object.keys(agents).length).toBe(19);
+    expect(Object.keys(agents).length).toBe(23);
     expect(Object.keys(agents)).toContain('tracer');
     // Consolidated agents should not be in registry
     expect(Object.keys(agents)).not.toContain('harsh-critic');
@@ -69,7 +69,7 @@ describe('Agent Registry Validation', () => {
   test('all registry agents are exported from index.ts', async () => {
     const registryAgents = Object.keys(getAgentDefinitions());
     const exports = await import('../agents/index.js') as Record<string, unknown>;
-    const deprecatedAliases = ['researcher', 'tdd-guide'];
+    const deprecatedAliases = ['tdd-guide'];
     for (const name of registryAgents) {
       if (deprecatedAliases.includes(name)) continue;
       const exportName = name.replace(/-([a-z])/g, (_: string, c: string) => c.toUpperCase()) + 'Agent';

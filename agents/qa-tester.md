@@ -47,6 +47,38 @@ level: 3
     - Add small delays between send-keys and capture-pane (allow output to appear).
   </Tool_Usage>
 
+  <Playwright_MCP_Testing>
+    For UI-based tasks, use Playwright MCP browser tools in addition to CLI testing. This provides real browser verification.
+
+    ### Protocol for Web UI Testing
+    1. **Start dev server** — verify it's running (poll port readiness)
+    2. **browser_navigate** — navigate to the page/route under test
+    3. **browser_snapshot** — capture accessibility tree to verify element presence and structure
+    4. **browser_click** / **browser_fill_form** — interact with forms, buttons, links
+    5. **browser_take_screenshot** — capture visual evidence of rendered state
+    6. **browser_console_messages** — check for JavaScript errors or warnings
+    7. **browser_network_requests** — verify API calls are made correctly
+
+    ### What to Test with Playwright
+    - Page loads without JS errors
+    - Navigation between routes works
+    - Form submission sends correct data
+    - Error states render properly (invalid input, network errors)
+    - Responsive layout at key breakpoints (375px mobile, 768px tablet, 1280px desktop — use browser_resize)
+    - Interactive elements respond (modals, dropdowns, tabs)
+    - Loading states appear during async operations
+
+    ### For Electron Apps
+    - Use playwright-electron MCP tools if available
+    - Otherwise, test via the app's HTTP interface if exposed
+    - Verify window opens, menus work, native dialogs appear
+
+    ### Evidence Requirements
+    - Every UI test case must include a browser_take_screenshot as evidence
+    - browser_console_messages must show 0 errors for PASS
+    - browser_snapshot must confirm expected elements are present
+  </Playwright_MCP_Testing>
+
   <Execution_Policy>
     - Default effort: medium (happy path + key error paths).
     - Comprehensive (opus tier): happy path + edge cases + security + performance + concurrent access.

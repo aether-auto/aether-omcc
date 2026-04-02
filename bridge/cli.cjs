@@ -4719,6 +4719,13 @@ function getAgentDefinitions(options) {
     "git-master": gitMasterAgent,
     "code-simplifier": codeSimplifierAgent,
     // ============================================================
+    // DEVELOPMENT TEAM (aether-omcc extensions)
+    // ============================================================
+    "frontend-dev": frontendDevAgent,
+    "backend-dev": backendDevAgent,
+    "db-dev": dbDevAgent,
+    researcher: researcherAgent,
+    // ============================================================
     // COORDINATION
     // ============================================================
     critic: criticAgent,
@@ -4746,7 +4753,7 @@ function getAgentDefinitions(options) {
   }
   return result;
 }
-var debuggerAgent, verifierAgent, testEngineerAgent, securityReviewerAgent, codeReviewerAgent, gitMasterAgent, codeSimplifierAgent, AGENT_CONFIG_KEY_MAP, omcSystemPrompt;
+var debuggerAgent, verifierAgent, frontendDevAgent, backendDevAgent, dbDevAgent, researcherAgent, testEngineerAgent, securityReviewerAgent, codeReviewerAgent, gitMasterAgent, codeSimplifierAgent, AGENT_CONFIG_KEY_MAP, omcSystemPrompt;
 var init_definitions = __esm({
   "src/agents/definitions.ts"() {
     "use strict";
@@ -4787,6 +4794,34 @@ var init_definitions = __esm({
       name: "verifier",
       description: "Completion evidence, claim validation, test adequacy (Sonnet).",
       prompt: loadAgentPrompt("verifier"),
+      model: "sonnet",
+      defaultModel: "sonnet"
+    };
+    frontendDevAgent = {
+      name: "frontend-dev",
+      description: "Frontend implementation \u2014 React, CSS, components, pages, client-side logic (Sonnet).",
+      prompt: loadAgentPrompt("frontend-dev"),
+      model: "sonnet",
+      defaultModel: "sonnet"
+    };
+    backendDevAgent = {
+      name: "backend-dev",
+      description: "Backend implementation \u2014 APIs, services, middleware, business logic (Sonnet).",
+      prompt: loadAgentPrompt("backend-dev"),
+      model: "sonnet",
+      defaultModel: "sonnet"
+    };
+    dbDevAgent = {
+      name: "db-dev",
+      description: "Database specialist \u2014 schema, migrations, queries, seeds, optimization (Sonnet).",
+      prompt: loadAgentPrompt("db-dev"),
+      model: "sonnet",
+      defaultModel: "sonnet"
+    };
+    researcherAgent = {
+      name: "researcher",
+      description: "Research sub-agent \u2014 documentation, pattern discovery, best practices. Read-only (Sonnet).",
+      prompt: loadAgentPrompt("researcher"),
       model: "sonnet",
       defaultModel: "sonnet"
     };
@@ -4844,7 +4879,11 @@ var init_definitions = __esm({
       "git-master": "gitMaster",
       "code-simplifier": "codeSimplifier",
       critic: "critic",
-      "document-specialist": "documentSpecialist"
+      "document-specialist": "documentSpecialist",
+      "frontend-dev": "frontendDev",
+      "backend-dev": "backendDev",
+      "db-dev": "dbDev",
+      researcher: "researcher"
     };
     omcSystemPrompt = `You are the relentless orchestrator of a multi-agent development system.
 
@@ -6430,10 +6469,11 @@ function writeModeState(mode, state, directory, sessionId) {
       ensureOmcDir("state", baseDir);
     }
     const filePath = resolveFile(mode, directory, sessionId);
-    const envelope = { ...state, _meta: { written_at: (/* @__PURE__ */ new Date()).toISOString(), mode } };
-    const tmpPath = filePath + ".tmp";
-    (0, import_fs17.writeFileSync)(tmpPath, JSON.stringify(envelope, null, 2), { mode: 384 });
-    (0, import_fs17.renameSync)(tmpPath, filePath);
+    const envelope = {
+      ...state,
+      _meta: { written_at: (/* @__PURE__ */ new Date()).toISOString(), mode, ...sessionId ? { sessionId } : {} }
+    };
+    atomicWriteJsonSync(filePath, envelope);
     return true;
   } catch {
     return false;
@@ -6502,6 +6542,7 @@ var init_mode_state_io = __esm({
     import_fs17 = require("fs");
     import_path22 = require("path");
     init_worktree_paths();
+    init_atomic_write();
   }
 });
 
@@ -6515,21 +6556,24 @@ var init_mode_names = __esm({
       TEAM: "team",
       RALPH: "ralph",
       ULTRAWORK: "ultrawork",
-      ULTRAQA: "ultraqa"
+      ULTRAQA: "ultraqa",
+      RALPLAN: "ralplan"
     };
     ALL_MODE_NAMES = [
       MODE_NAMES.AUTOPILOT,
       MODE_NAMES.TEAM,
       MODE_NAMES.RALPH,
       MODE_NAMES.ULTRAWORK,
-      MODE_NAMES.ULTRAQA
+      MODE_NAMES.ULTRAQA,
+      MODE_NAMES.RALPLAN
     ];
     MODE_STATE_FILE_MAP = {
       [MODE_NAMES.AUTOPILOT]: "autopilot-state.json",
       [MODE_NAMES.TEAM]: "team-state.json",
       [MODE_NAMES.RALPH]: "ralph-state.json",
       [MODE_NAMES.ULTRAWORK]: "ultrawork-state.json",
-      [MODE_NAMES.ULTRAQA]: "ultraqa-state.json"
+      [MODE_NAMES.ULTRAQA]: "ultraqa-state.json",
+      [MODE_NAMES.RALPLAN]: "ralplan-state.json"
     };
     SESSION_END_MODE_STATE_FILES = [
       { file: MODE_STATE_FILE_MAP[MODE_NAMES.AUTOPILOT], mode: MODE_NAMES.AUTOPILOT },
@@ -6537,12 +6581,14 @@ var init_mode_names = __esm({
       { file: MODE_STATE_FILE_MAP[MODE_NAMES.RALPH], mode: MODE_NAMES.RALPH },
       { file: MODE_STATE_FILE_MAP[MODE_NAMES.ULTRAWORK], mode: MODE_NAMES.ULTRAWORK },
       { file: MODE_STATE_FILE_MAP[MODE_NAMES.ULTRAQA], mode: MODE_NAMES.ULTRAQA },
+      { file: MODE_STATE_FILE_MAP[MODE_NAMES.RALPLAN], mode: MODE_NAMES.RALPLAN },
       { file: "skill-active-state.json", mode: "skill-active" }
     ];
     SESSION_METRICS_MODE_FILES = [
       { file: MODE_STATE_FILE_MAP[MODE_NAMES.AUTOPILOT], mode: MODE_NAMES.AUTOPILOT },
       { file: MODE_STATE_FILE_MAP[MODE_NAMES.RALPH], mode: MODE_NAMES.RALPH },
-      { file: MODE_STATE_FILE_MAP[MODE_NAMES.ULTRAWORK], mode: MODE_NAMES.ULTRAWORK }
+      { file: MODE_STATE_FILE_MAP[MODE_NAMES.ULTRAWORK], mode: MODE_NAMES.ULTRAWORK },
+      { file: MODE_STATE_FILE_MAP[MODE_NAMES.RALPLAN], mode: MODE_NAMES.RALPLAN }
     ];
   }
 });
@@ -8480,12 +8526,13 @@ ${END_MARKER}
   const hasResidualStartMarker = markerStartRegex.test(strippedExistingContent);
   const hasResidualEndMarker = markerEndRegex.test(strippedExistingContent);
   if (hasResidualStartMarker || hasResidualEndMarker) {
+    const recoveredContent = strippedExistingContent.replace(markerStartRegex, "").replace(markerEndRegex, "").trim();
     return `${START_MARKER}
 ${versionMarker}${cleanOmcContent}
 ${END_MARKER}
 
 <!-- User customizations (recovered from corrupted markers) -->
-${existingContent}`;
+${recoveredContent}`;
   }
   const preservedUserContent = trimClaudeUserContent(
     stripGeneratedUserCustomizationHeaders(strippedExistingContent)
@@ -12309,8 +12356,8 @@ var init_types2 = __esm({
 });
 
 // src/hud/background-cleanup.ts
-async function cleanupStaleBackgroundTasks(thresholdMs = STALE_TASK_THRESHOLD_MS) {
-  const state = readHudState();
+async function cleanupStaleBackgroundTasks(thresholdMs = STALE_TASK_THRESHOLD_MS, directory) {
+  const state = readHudState(directory);
   if (!state || !state.backgroundTasks) {
     return 0;
   }
@@ -12325,12 +12372,12 @@ async function cleanupStaleBackgroundTasks(thresholdMs = STALE_TASK_THRESHOLD_MS
   }
   const removedCount = originalCount - state.backgroundTasks.length;
   if (removedCount > 0) {
-    writeHudState(state);
+    writeHudState(state, directory);
   }
   return removedCount;
 }
-async function detectOrphanedTasks() {
-  const state = readHudState();
+async function detectOrphanedTasks(directory) {
+  const state = readHudState(directory);
   if (!state || !state.backgroundTasks) {
     return [];
   }
@@ -12346,12 +12393,12 @@ async function detectOrphanedTasks() {
   }
   return orphaned;
 }
-async function markOrphanedTasksAsStale() {
-  const state = readHudState();
+async function markOrphanedTasksAsStale(directory) {
+  const state = readHudState(directory);
   if (!state || !state.backgroundTasks) {
     return 0;
   }
-  const orphaned = await detectOrphanedTasks();
+  const orphaned = await detectOrphanedTasks(directory);
   let marked = 0;
   for (const orphanedTask of orphaned) {
     const task = state.backgroundTasks.find((t) => t.id === orphanedTask.id);
@@ -12361,7 +12408,7 @@ async function markOrphanedTasksAsStale() {
     }
   }
   if (marked > 0) {
-    writeHudState(state);
+    writeHudState(state, directory);
   }
   return marked;
 }
@@ -12560,9 +12607,9 @@ function mergeWithDefaults(config2) {
     ...config2.maxWidth != null ? { maxWidth: config2.maxWidth } : {}
   };
 }
-async function initializeHUDState() {
-  const removedStale = await cleanupStaleBackgroundTasks();
-  const markedOrphaned = await markOrphanedTasksAsStale();
+async function initializeHUDState(directory) {
+  const removedStale = await cleanupStaleBackgroundTasks(void 0, directory);
+  const markedOrphaned = await markOrphanedTasksAsStale(directory);
   if (removedStale > 0 || markedOrphaned > 0) {
     console.error(
       `HUD cleanup: removed ${removedStale} stale tasks, marked ${markedOrphaned} orphaned tasks`
@@ -15265,6 +15312,9 @@ var init_pipeline_types = __esm({
     "use strict";
     STAGE_ORDER = [
       "ralplan",
+      "research",
+      "ui-specs",
+      "todos",
       "execution",
       "ralph",
       "qa"
@@ -15369,6 +15419,157 @@ Signal: ${RALPLAN_COMPLETION_SIGNAL}
   }
 });
 
+// src/hooks/autopilot/adapters/ui-specs-adapter.ts
+var UI_SPECS_COMPLETION_SIGNAL, uiSpecsAdapter;
+var init_ui_specs_adapter = __esm({
+  "src/hooks/autopilot/adapters/ui-specs-adapter.ts"() {
+    "use strict";
+    UI_SPECS_COMPLETION_SIGNAL = "PIPELINE_UI_SPECS_COMPLETE";
+    uiSpecsAdapter = {
+      id: "ui-specs",
+      name: "UI Specifications",
+      completionSignal: UI_SPECS_COMPLETION_SIGNAL,
+      shouldSkip(config2) {
+        return false;
+      },
+      getPrompt(context) {
+        return `## Stage: UI Specifications
+
+### Objective
+Generate visual UI specifications with shared design tokens for all screens in the project.
+
+### Instructions
+1. Read the plan at: ${context.planPath || ".omc/plans/"}
+2. Read the spec at: ${context.specPath || ".omc/specs/"}
+3. Invoke the /aether-omcc:ui-specs skill
+4. The skill will:
+   a. Extract screen inventory from the plan
+   b. Set up design tokens (ask user for preferences)
+   c. Generate self-contained HTML spec for each page
+   d. Create an interactive gallery
+   e. Serve for user review
+5. IMPORTANT: Use AskUserQuestion to confirm user approves the specs before proceeding
+
+### User Gate
+This stage REQUIRES user approval before proceeding. Do not auto-advance.
+Use AskUserQuestion with these options:
+- "Approve all specs" \u2192 emit completion signal
+- "Edit design tokens" \u2192 re-run token setup
+- "Redesign page: [name]" \u2192 regenerate specific page
+- "Add new page" \u2192 add to spec inventory
+
+### Completion
+When user approves, emit: PIPELINE_UI_SPECS_COMPLETE
+`;
+      }
+    };
+  }
+});
+
+// src/hooks/autopilot/adapters/research-adapter.ts
+var RESEARCH_COMPLETION_SIGNAL, researchAdapter;
+var init_research_adapter = __esm({
+  "src/hooks/autopilot/adapters/research-adapter.ts"() {
+    "use strict";
+    RESEARCH_COMPLETION_SIGNAL = "PIPELINE_RESEARCH_COMPLETE";
+    researchAdapter = {
+      id: "research",
+      name: "Deep Research",
+      completionSignal: RESEARCH_COMPLETION_SIGNAL,
+      shouldSkip(_config) {
+        return false;
+      },
+      getPrompt(context) {
+        return `## Stage: Deep Research
+
+### Objective
+Conduct multi-agent deep research to inform implementation decisions with real-world patterns and best practices.
+
+### Smart Detection
+First, analyze the plan complexity:
+- Read the plan at: ${context.planPath || ".omc/plans/"}
+- Count the number of tasks/features
+- Identify the technology stack
+
+**SKIP research if ALL of these are true:**
+- Plan has fewer than 3 distinct tasks
+- Uses only well-known, single technology (plain React, Express CRUD, etc.)
+- No complex integrations (no real-time, payments, OAuth, etc.)
+- No security-critical features
+
+**RUN research if ANY of these are true:**
+- 3+ different technologies in the stack
+- Complex integrations (real-time, payments, OAuth/OIDC, file storage, etc.)
+- Security-critical features (auth, permissions, data encryption)
+- 5+ tasks in the plan
+- Uses newer/less-documented frameworks
+
+If skipping, emit ${RESEARCH_COMPLETION_SIGNAL} immediately.
+
+### Research Protocol (if running)
+1. Invoke /aether-omcc:deep-research skill
+2. The skill will:
+   a. Create a research plan with 5-10 specific questions
+   b. Spawn parallel researcher agents (one per question)
+   c. Collect and synthesize findings
+   d. Write results to .omc/research/
+
+### Completion
+When research is complete (or skipped), emit: ${RESEARCH_COMPLETION_SIGNAL}
+`;
+      }
+    };
+  }
+});
+
+// src/hooks/autopilot/adapters/todos-adapter.ts
+var TODOS_COMPLETION_SIGNAL, todosAdapter;
+var init_todos_adapter = __esm({
+  "src/hooks/autopilot/adapters/todos-adapter.ts"() {
+    "use strict";
+    TODOS_COMPLETION_SIGNAL = "PIPELINE_TODOS_COMPLETE";
+    todosAdapter = {
+      id: "todos",
+      name: "TODO Generation",
+      completionSignal: TODOS_COMPLETION_SIGNAL,
+      shouldSkip(_config) {
+        return false;
+      },
+      getPrompt(context) {
+        return `## Stage: TODO Generation
+
+### Objective
+Generate exhaustive, trackable TODO items with detailed acceptance criteria from the planning artifacts.
+
+### Instructions
+1. Read the plan at: ${context.planPath || ".omc/plans/"}
+2. Read any deep-interview spec at: ${context.specPath || ".omc/specs/"}
+3. Read any research at: .omc/research/ (if exists)
+4. Invoke the /aether-omcc:todos skill to generate comprehensive TODOs
+5. Verify TODOs cover EVERY aspect of the project:
+   - Every data model mentioned in the plan
+   - Every API endpoint specified
+   - Every UI screen/page described
+   - Every integration point
+   - Auth, error handling, testing
+6. Each TODO must have >=3 specific, testable acceptance criteria
+7. Generate .omc/todos/INDEX.md with dependency DAG
+
+### Completion
+When all TODOs are generated and INDEX.md is complete, emit: ${TODOS_COMPLETION_SIGNAL}
+
+### Quality Gate
+Before completing, verify:
+- No TODO has fewer than 3 acceptance criteria
+- All acceptance criteria are specific (contain concrete values, endpoints, or screen names)
+- Dependencies form a valid DAG (no circular dependencies)
+- Foundation tasks (auth, base models, layouts) have no dependencies or only depend on other foundation tasks
+`;
+      }
+    };
+  }
+});
+
 // src/hooks/autopilot/adapters/execution-adapter.ts
 var EXECUTION_COMPLETION_SIGNAL, executionAdapter;
 var init_execution_adapter = __esm({
@@ -15407,13 +15608,30 @@ Use the Team orchestrator to execute tasks in parallel:
 
 ### Agent Selection
 
-Match agent types to task complexity:
+Match agent types to task scope and complexity:
+
+**Specialist Agents (prefer for full-stack features):**
+- UI, pages, components, styles, client state: \`frontend-dev\` with \`model="sonnet"\`
+- API routes, services, middleware, business logic: \`backend-dev\` with \`model="sonnet"\`
+- Schema, migrations, seeds, queries: \`db-dev\` with \`model="sonnet"\`
+
+**General Agents:**
 - Simple tasks (single file, config): \`executor\` with \`model="haiku"\`
-- Standard implementation: \`executor\` with \`model="sonnet"\`
+- Standard implementation (non-scoped): \`executor\` with \`model="sonnet"\`
 - Complex work (architecture, refactoring): \`executor\` with \`model="opus"\`
 - Build issues: \`debugger\` with \`model="sonnet"\`
 - Test creation: \`test-engineer\` with \`model="sonnet"\`
-- UI work: \`designer\` with \`model="sonnet"\`
+- UI work (design-focused): \`designer\` with \`model="sonnet"\`
+
+### Team Dispatch for Full-Stack Tasks
+
+When a task spans multiple layers (Data + API + UI), spawn specialist agents IN PARALLEL:
+1. Analyze the task scope sections (Data/API/UI)
+2. Spawn \`db-dev\` for Data scope, \`backend-dev\` for API scope, \`frontend-dev\` for UI scope
+3. Each agent receives the relevant TODO details via SendMessage
+4. Each agent implements their scope independently and reports back
+5. After all agents complete, run integration tests
+6. If tests fail, spawn \`debugger\` to diagnose cross-layer issues
 
 ### Progress Tracking
 
@@ -15594,9 +15812,28 @@ Run build/lint/test cycling until all checks pass.
 
 ${getQAPrompt()}
 
+### Playwright Browser Testing (MANDATORY for UI tasks)
+
+For any task that modified frontend code, components, pages, or styles:
+
+1. **Start the dev server** if not already running
+2. **browser_navigate** to each affected page/route
+3. **browser_snapshot** to verify element presence and accessibility tree
+4. **browser_click** / **browser_fill_form** to test key interactions
+5. **browser_take_screenshot** for visual evidence of each tested screen
+6. **browser_console_messages** to verify 0 JavaScript errors
+7. **browser_resize** to test responsive layout at mobile (375px), tablet (768px), and desktop (1280px)
+
+Evidence requirements:
+- Every UI-related test case must include a screenshot
+- Console must show 0 error-level messages
+- Accessibility snapshot must confirm expected elements are present
+
+For Electron apps: use playwright-electron MCP tools if available, otherwise test via HTTP interface.
+
 ### Completion
 
-When all QA checks pass:
+When all QA checks pass (including Playwright browser tests for UI tasks):
 
 Signal: ${QA_COMPLETION_SIGNAL}
 `;
@@ -15614,15 +15851,24 @@ var init_adapters = __esm({
   "src/hooks/autopilot/adapters/index.ts"() {
     "use strict";
     init_ralplan_adapter();
+    init_ui_specs_adapter();
+    init_research_adapter();
+    init_todos_adapter();
     init_execution_adapter();
     init_ralph_adapter();
     init_qa_adapter();
     init_ralplan_adapter();
+    init_ui_specs_adapter();
+    init_research_adapter();
+    init_todos_adapter();
     init_execution_adapter();
     init_ralph_adapter();
     init_qa_adapter();
     ALL_ADAPTERS = [
       ralplanAdapter,
+      researchAdapter,
+      uiSpecsAdapter,
+      todosAdapter,
       executionAdapter,
       ralphAdapter,
       qaAdapter
@@ -16212,7 +16458,8 @@ function detectPipelineSignal(sessionId, signal) {
     (0, import_path57.join)(claudeDir, "sessions", sessionId, "messages.json"),
     (0, import_path57.join)(claudeDir, "transcripts", `${sessionId}.md`)
   ];
-  const pattern = new RegExp(signal, "i");
+  const escaped = signal.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const pattern = new RegExp(escaped, "i");
   for (const transcriptPath of possiblePaths) {
     if ((0, import_fs48.existsSync)(transcriptPath)) {
       try {
@@ -17732,6 +17979,17 @@ function getReplyListenerPlatformConfig(config2) {
     slackChannelId: slackBotConfig?.channelId || config2["slack-bot"]?.channelId
   };
 }
+function parseSlackUserIds(envValue, configValue) {
+  if (envValue) {
+    const ids = envValue.split(",").map((id) => id.trim()).filter((id) => /^[UW][A-Z0-9]{8,11}$/.test(id));
+    if (ids.length > 0) return ids;
+  }
+  if (Array.isArray(configValue)) {
+    const ids = configValue.filter((id) => typeof id === "string" && /^[UW][A-Z0-9]{8,11}$/.test(id));
+    if (ids.length > 0) return ids;
+  }
+  return [];
+}
 function parseDiscordUserIds(envValue, configValue) {
   if (envValue) {
     const ids = envValue.split(",").map((id) => id.trim()).filter((id) => /^\d{17,20}$/.test(id));
@@ -17777,13 +18035,18 @@ function getReplyConfig() {
       "[notifications] Discord reply listening disabled: authorizedDiscordUserIds is empty. Set OMC_REPLY_DISCORD_USER_IDS or add to .omc-config.json notifications.reply.authorizedDiscordUserIds"
     );
   }
+  const authorizedSlackUserIds = parseSlackUserIds(
+    process.env.OMC_REPLY_SLACK_USER_IDS,
+    replyRaw?.authorizedSlackUserIds
+  );
   return {
     enabled: true,
     pollIntervalMs: parseIntSafe(process.env.OMC_REPLY_POLL_INTERVAL_MS) ?? replyRaw?.pollIntervalMs ?? 3e3,
     maxMessageLength: replyRaw?.maxMessageLength ?? 500,
     rateLimitPerMinute: parseIntSafe(process.env.OMC_REPLY_RATE_LIMIT) ?? replyRaw?.rateLimitPerMinute ?? 10,
     includePrefix: process.env.OMC_REPLY_INCLUDE_PREFIX !== "false" && replyRaw?.includePrefix !== false,
-    authorizedDiscordUserIds
+    authorizedDiscordUserIds,
+    authorizedSlackUserIds
   };
 }
 function detectLegacyOpenClawConfig() {
@@ -18770,24 +19033,27 @@ async function sendCustomWebhook(integration, payload) {
     }
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), config2.timeout);
-    const response = await fetch(url, {
-      method: config2.method,
-      headers,
-      body: config2.method !== "GET" ? body : void 0,
-      signal: controller.signal
-    });
-    clearTimeout(timeout);
-    if (!response.ok) {
+    try {
+      const response = await fetch(url, {
+        method: config2.method,
+        headers,
+        body: config2.method !== "GET" ? body : void 0,
+        signal: controller.signal
+      });
+      if (!response.ok) {
+        return {
+          platform: "webhook",
+          success: false,
+          error: `HTTP ${response.status}: ${response.statusText}`
+        };
+      }
       return {
         platform: "webhook",
-        success: false,
-        error: `HTTP ${response.status}: ${response.statusText}`
+        success: true
       };
+    } finally {
+      clearTimeout(timeout);
     }
-    return {
-      platform: "webhook",
-      success: true
-    };
   } catch (error2) {
     return {
       platform: "webhook",
@@ -21089,6 +21355,14 @@ async function pollLoop() {
             channelId: slackChannelId
           },
           async (event) => {
+            if (!config2.authorizedSlackUserIds || config2.authorizedSlackUserIds.length === 0) {
+              log("WARN: No authorized Slack user IDs configured, rejecting all messages (fail-closed)");
+              return;
+            }
+            if (!config2.authorizedSlackUserIds.includes(event.user)) {
+              log(`REJECTED Slack message from unauthorized user ${event.user}`);
+              return;
+            }
             if (!rateLimiter.canProceed()) {
               log(`WARN: Rate limit exceeded, dropping Slack message ${event.ts}`);
               state.errors++;
@@ -21099,12 +21373,6 @@ async function pollLoop() {
               const mapping = lookupByMessageId("slack-bot", event.thread_ts);
               if (mapping) {
                 targetPaneId = mapping.tmuxPaneId;
-              }
-            }
-            if (!targetPaneId) {
-              const mappings = loadAllMappings();
-              if (mappings.length > 0) {
-                targetPaneId = mappings[mappings.length - 1].tmuxPaneId;
               }
             }
             if (!targetPaneId) {
@@ -22662,23 +22930,35 @@ async function teamWriteWorkerInbox(teamName, workerName2, prompt, cwd2) {
   await writeAtomic(p, prompt);
 }
 async function teamCreateTask(teamName, task, cwd2) {
-  const cfg = await teamReadConfig(teamName, cwd2);
-  if (!cfg) throw new Error(`Team ${teamName} not found`);
-  const nextId = String(cfg.next_task_id ?? 1);
-  const created = {
-    ...task,
-    id: nextId,
-    status: task.status ?? "pending",
-    depends_on: task.depends_on ?? task.blocked_by ?? [],
-    version: 1,
-    created_at: (/* @__PURE__ */ new Date()).toISOString()
-  };
-  const taskPath2 = absPath(cwd2, TeamPaths.tasks(teamName));
-  await (0, import_promises7.mkdir)(taskPath2, { recursive: true });
-  await writeAtomic((0, import_node_path5.join)(taskPath2, `task-${nextId}.json`), JSON.stringify(created, null, 2));
-  cfg.next_task_id = Number(nextId) + 1;
-  await writeAtomic(absPath(cwd2, TeamPaths.config(teamName)), JSON.stringify(cfg, null, 2));
-  return created;
+  const lockDir = (0, import_node_path5.join)(teamDir2(teamName, cwd2), ".lock-create-task");
+  const timeoutMs = 5e3;
+  const deadline = Date.now() + timeoutMs;
+  let delayMs = 20;
+  while (Date.now() < deadline) {
+    const result = await withLock(lockDir, async () => {
+      const cfg = await teamReadConfig(teamName, cwd2);
+      if (!cfg) throw new Error(`Team ${teamName} not found`);
+      const nextId = String(cfg.next_task_id ?? 1);
+      const created = {
+        ...task,
+        id: nextId,
+        status: task.status ?? "pending",
+        depends_on: task.depends_on ?? task.blocked_by ?? [],
+        version: 1,
+        created_at: (/* @__PURE__ */ new Date()).toISOString()
+      };
+      const taskPath2 = absPath(cwd2, TeamPaths.tasks(teamName));
+      await (0, import_promises7.mkdir)(taskPath2, { recursive: true });
+      await writeAtomic((0, import_node_path5.join)(taskPath2, `task-${nextId}.json`), JSON.stringify(created, null, 2));
+      cfg.next_task_id = Number(nextId) + 1;
+      await writeAtomic(absPath(cwd2, TeamPaths.config(teamName)), JSON.stringify(cfg, null, 2));
+      return created;
+    });
+    if (result.ok) return result.value;
+    await new Promise((resolve17) => setTimeout(resolve17, delayMs));
+    delayMs = Math.min(delayMs * 2, 200);
+  }
+  throw new Error(`Failed to acquire task creation lock for team ${teamName} after ${timeoutMs}ms`);
 }
 async function teamReadTask(teamName, taskId, cwd2) {
   for (const candidate of taskFileCandidates(teamName, taskId, cwd2)) {
@@ -24957,7 +25237,6 @@ async function markLeaderPaneMissingDeferred(params) {
   ).catch(logTransitionFailure);
 }
 async function queueInboxInstruction(params) {
-  await params.deps.writeWorkerInbox(params.teamName, params.workerName, params.inbox, params.cwd);
   const queued = await enqueueDispatchRequest(
     params.teamName,
     {
@@ -24979,6 +25258,17 @@ async function queueInboxInstruction(params) {
       reason: "duplicate_pending_dispatch_request",
       request_id: queued.request.request_id
     };
+  }
+  try {
+    await params.deps.writeWorkerInbox(params.teamName, params.workerName, params.inbox, params.cwd);
+  } catch (error2) {
+    await markImmediateDispatchFailure({
+      teamName: params.teamName,
+      request: queued.request,
+      reason: "inbox_write_failed",
+      cwd: params.cwd
+    });
+    throw error2;
   }
   const notifyOutcome = await Promise.resolve(params.notify(
     { workerName: params.workerName, workerIndex: params.workerIndex, paneId: params.paneId },
@@ -25195,9 +25485,12 @@ function removeWorkerWorktree(teamName, workerName2, repoRoot) {
     (0, import_node_child_process.execFileSync)("git", ["branch", "-D", branch], { cwd: repoRoot, stdio: "pipe" });
   } catch {
   }
-  const existing = readMetadata(repoRoot, teamName);
-  const updated = existing.filter((e) => e.workerName !== workerName2);
-  writeMetadata(repoRoot, teamName, updated);
+  const metaLockPath = getMetadataPath(repoRoot, teamName) + ".lock";
+  withFileLockSync(metaLockPath, () => {
+    const existing = readMetadata(repoRoot, teamName);
+    const updated = existing.filter((e) => e.workerName !== workerName2);
+    writeMetadata(repoRoot, teamName, updated);
+  });
 }
 function cleanupTeamWorktrees(teamName, repoRoot) {
   const entries = readMetadata(repoRoot, teamName);
@@ -25767,7 +26060,7 @@ async function requeueDeadWorkerTasks(teamName, deadWorkerNames, cwd2) {
     await writeFile9(sidecarPath, JSON.stringify(sidecar, null, 2), "utf-8");
     const taskPath2 = absPath(cwd2, TeamPaths.taskFile(sanitized, task.id));
     try {
-      const { readFileSync: readFileSync80, writeFileSync: writeFileSync35 } = await import("fs");
+      const { readFileSync: readFileSync80, writeFileSync: writeFileSync34 } = await import("fs");
       const { withFileLockSync: withFileLockSync2 } = await Promise.resolve().then(() => (init_file_lock(), file_lock_exports));
       withFileLockSync2(taskPath2 + ".lock", () => {
         const raw = readFileSync80(taskPath2, "utf-8");
@@ -25776,7 +26069,7 @@ async function requeueDeadWorkerTasks(teamName, deadWorkerNames, cwd2) {
           taskData.status = "pending";
           taskData.owner = void 0;
           taskData.claim = void 0;
-          writeFileSync35(taskPath2, JSON.stringify(taskData, null, 2), "utf-8");
+          writeFileSync34(taskPath2, JSON.stringify(taskData, null, 2), "utf-8");
           requeued.push(task.id);
         }
       });
@@ -26771,7 +27064,13 @@ async function spawnWorkerForTask(runtime, workerNameValue, taskIndex) {
     runtime.cwd
   ]);
   const paneId = splitResult.stdout.split("\n")[0]?.trim();
-  if (!paneId) return "";
+  if (!paneId) {
+    try {
+      await resetTaskToPending(root2, taskId, runtime.teamName, runtime.cwd);
+    } catch {
+    }
+    return "";
+  }
   const workerIndex = parseWorkerIndex(workerNameValue);
   const agentType = runtime.config.agentTypes[workerIndex % runtime.config.agentTypes.length] ?? runtime.config.agentTypes[0] ?? "claude";
   const usePromptMode = isPromptModeAgent(agentType);
@@ -34438,7 +34737,7 @@ function createRateLimitedCacheEntry(source, data, pollIntervalMs, previousCount
 function getKeychainServiceName() {
   const configDir = process.env.CLAUDE_CONFIG_DIR;
   if (configDir) {
-    const hash = (0, import_crypto15.createHash)("sha256").update(configDir).digest("hex").slice(0, 8);
+    const hash = (0, import_crypto16.createHash)("sha256").update(configDir).digest("hex").slice(0, 8);
     return `Claude Code-credentials-${hash}`;
   }
   return "Claude Code-credentials";
@@ -34914,7 +35213,7 @@ async function getUsage() {
     return { rateLimits: null, error: "network" };
   }
 }
-var import_fs85, import_path103, import_child_process28, import_crypto15, import_os18, import_https3, CACHE_TTL_FAILURE_MS, CACHE_TTL_TRANSIENT_NETWORK_MS, MAX_RATE_LIMITED_BACKOFF_MS, API_TIMEOUT_MS2, MAX_STALE_DATA_MS, TOKEN_REFRESH_URL_HOSTNAME, USAGE_CACHE_LOCK_OPTS, TOKEN_REFRESH_URL_PATH, DEFAULT_OAUTH_CLIENT_ID;
+var import_fs85, import_path103, import_child_process28, import_crypto16, import_os18, import_https3, CACHE_TTL_FAILURE_MS, CACHE_TTL_TRANSIENT_NETWORK_MS, MAX_RATE_LIMITED_BACKOFF_MS, API_TIMEOUT_MS2, MAX_STALE_DATA_MS, TOKEN_REFRESH_URL_HOSTNAME, USAGE_CACHE_LOCK_OPTS, TOKEN_REFRESH_URL_PATH, DEFAULT_OAUTH_CLIENT_ID;
 var init_usage_api = __esm({
   "src/hud/usage-api.ts"() {
     "use strict";
@@ -34922,7 +35221,7 @@ var init_usage_api = __esm({
     init_paths();
     import_path103 = require("path");
     import_child_process28 = require("child_process");
-    import_crypto15 = require("crypto");
+    import_crypto16 = require("crypto");
     import_os18 = require("os");
     import_https3 = __toESM(require("https"), 1);
     init_ssrf_guard();
@@ -37411,6 +37710,8 @@ var init_sanitize = __esm({
 // src/hud/index.ts
 var hud_exports = {};
 __export(hud_exports, {
+  _getSummaryProcessPid: () => _getSummaryProcessPid,
+  _resetSummarySpawnTimestamp: () => _resetSummarySpawnTimestamp,
   main: () => main2
 });
 function extractSessionIdFromPath(transcriptPath) {
@@ -37427,7 +37728,27 @@ function readSessionSummary(stateDir, sessionId) {
     return null;
   }
 }
+function _resetSummarySpawnTimestamp() {
+  lastSummarySpawnTimestamp = 0;
+  summaryProcessPid = null;
+}
+function _getSummaryProcessPid() {
+  return summaryProcessPid;
+}
 function spawnSessionSummaryScript(transcriptPath, stateDir, sessionId) {
+  if (summaryProcessPid !== null) {
+    try {
+      process.kill(summaryProcessPid, 0);
+      return;
+    } catch {
+      summaryProcessPid = null;
+    }
+  }
+  const now = Date.now();
+  if (now - lastSummarySpawnTimestamp < 12e4) {
+    return;
+  }
+  lastSummarySpawnTimestamp = now;
   const thisDir = (0, import_path119.dirname)((0, import_url16.fileURLToPath)(importMetaUrl));
   const scriptPath = (0, import_path119.join)(
     thisDir,
@@ -37452,8 +37773,10 @@ function spawnSessionSummaryScript(transcriptPath, stateDir, sessionId) {
         env: { ...process.env, CLAUDE_CODE_ENTRYPOINT: "session-summary" }
       }
     );
+    summaryProcessPid = child.pid ?? null;
     child.unref();
   } catch (error2) {
+    summaryProcessPid = null;
     if (process.env.OMC_DEBUG) {
       console.error(
         "[HUD] Failed to spawn session-summary:",
@@ -37472,9 +37795,6 @@ async function calculateSessionHealth(sessionStart, contextPercent) {
 }
 async function main2(watchMode = false, skipInit = false) {
   try {
-    if (!skipInit) {
-      await initializeHUDState();
-    }
     const previousStdinCache = readStdinCache();
     let stdin = await readStdin();
     if (stdin) {
@@ -37491,6 +37811,9 @@ async function main2(watchMode = false, skipInit = false) {
       return;
     }
     const cwd2 = resolveToWorktreeRoot(stdin.cwd || void 0);
+    if (!skipInit) {
+      await initializeHUDState(cwd2);
+    }
     const config2 = { ...readHudConfig() };
     if (config2.maxWidth === void 0) {
       const cols = process.stderr.columns || process.stdout.columns || parseInt(process.env.COLUMNS ?? "0", 10) || 0;
@@ -37671,7 +37994,7 @@ async function main2(watchMode = false, skipInit = false) {
     }
   }
 }
-var import_fs102, import_promises21, import_path119, import_os22, import_child_process44, import_url16;
+var import_fs102, import_promises21, import_path119, import_os22, import_child_process44, import_url16, lastSummarySpawnTimestamp, summaryProcessPid;
 var init_hud = __esm({
   "src/hud/index.ts"() {
     "use strict";
@@ -37695,6 +38018,8 @@ var init_hud = __esm({
     import_child_process44 = require("child_process");
     import_url16 = require("url");
     init_worktree_paths();
+    lastSummarySpawnTimestamp = 0;
+    summaryProcessPid = null;
     main2();
   }
 });
@@ -64270,9 +64595,10 @@ Error: ${sgLoadError}`
                 const varName = metaVar.replace(/^\$+/, "");
                 const captured = match.getMatch(varName);
                 if (captured) {
+                  const safeText = captured.text().replace(/\$/g, "$$$$");
                   finalReplacement = finalReplacement.replaceAll(
                     metaVar,
-                    captured.text()
+                    safeText
                   );
                 }
               }
@@ -66996,6 +67322,7 @@ function isPlainObject3(value) {
 function deepMerge3(base, incoming) {
   const result = { ...base };
   for (const key of Object.keys(incoming)) {
+    if (key === "__proto__" || key === "constructor" || key === "prototype") continue;
     const baseVal = base[key];
     const incomingVal = incoming[key];
     if (incomingVal === null || incomingVal === void 0) {
@@ -68582,6 +68909,7 @@ var sharedMemoryTools = [
 var import_path38 = require("path");
 var import_fs27 = require("fs");
 init_atomic_write();
+init_file_lock();
 var InteropConfigSchema = external_exports.object({
   sessionId: external_exports.string(),
   createdAt: external_exports.string(),
@@ -73855,6 +74183,17 @@ init_finder();
 init_parser();
 init_constants();
 
+// src/hooks/learner/auto-writer.ts
+var import_crypto14 = require("crypto");
+init_constants();
+
+// src/hooks/learner/auto-learner.ts
+var import_crypto15 = require("crypto");
+init_constants();
+
+// src/hooks/learner/detection-hook.ts
+init_constants();
+
 // src/hooks/learner/promotion.ts
 init_ralph();
 
@@ -73864,9 +74203,6 @@ var import_path100 = __toESM(require("path"), 1);
 var import_os17 = __toESM(require("os"), 1);
 init_paths();
 init_atomic_write();
-
-// src/hooks/learner/auto-learner.ts
-var import_crypto14 = require("crypto");
 
 // src/hooks/index.ts
 init_autopilot();
@@ -73926,6 +74262,7 @@ init_qa_tester();
 init_scientist();
 init_tracer();
 init_document_specialist();
+init_definitions();
 init_definitions();
 init_definitions();
 init_definitions();
@@ -77925,9 +78262,12 @@ var GiteaProvider = class {
   }
   viewIssueviaRest(number3, owner, repo) {
     const baseUrl = validateGiteaUrl(process.env.GITEA_URL ?? "");
+    const token = process.env.GITEA_TOKEN;
     if (!baseUrl || !owner || !repo) return null;
     try {
-      const args = ["-sS", `${baseUrl}/api/v1/repos/${owner}/${repo}/issues/${number3}`];
+      const args = ["-sS"];
+      if (token) args.push("-H", `Authorization: token ${token}`);
+      args.push(`${baseUrl}/api/v1/repos/${owner}/${repo}/issues/${number3}`);
       const raw = (0, import_node_child_process5.execFileSync)("curl", args, {
         encoding: "utf-8",
         timeout: 1e4,
@@ -78892,7 +79232,7 @@ async function launchCommand(args) {
 
 // src/cli/interop.ts
 var import_child_process35 = require("child_process");
-var import_crypto16 = require("crypto");
+var import_crypto17 = require("crypto");
 function readInteropRuntimeFlags(env2 = process.env) {
   const rawMode = (env2.OMX_OMC_INTEROP_MODE || "off").toLowerCase();
   const mode = rawMode === "observe" || rawMode === "active" ? rawMode : "off";
@@ -78949,7 +79289,7 @@ function launchInteropSession(cwd2 = process.cwd()) {
     console.error("Start tmux first: tmux new-session -s myproject");
     process.exit(1);
   }
-  const sessionId = `interop-${(0, import_crypto16.randomUUID)().split("-")[0]}`;
+  const sessionId = `interop-${(0, import_crypto17.randomUUID)().split("-")[0]}`;
   const _config = initInteropSession(sessionId, cwd2, hasCodex ? cwd2 : void 0);
   console.log(`Initializing interop session: ${sessionId}`);
   console.log(`Working directory: ${cwd2}`);

@@ -1,8 +1,13 @@
 "use strict";
+var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
+var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __esm = (fn, res) => function __init() {
+  return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
+};
 var __export = (target, all) => {
   for (var name in all)
     __defProp(target, name, { get: all[name], enumerable: true });
@@ -15,52 +20,148 @@ var __copyProps = (to, from, except, desc) => {
   }
   return to;
 };
+var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+  // If the importer is in node compatibility mode or this is not an ESM
+  // file that has been converted to a CommonJS file using a Babel-
+  // compatible transform (i.e. "__esModule" has not been set), then set
+  // "default" to the CommonJS "module.exports" for node compatibility.
+  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+  mod
+));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+
+// src/lib/worktree-paths.ts
+var import_crypto, import_child_process, import_fs, import_os, import_path, OmcPaths;
+var init_worktree_paths = __esm({
+  "src/lib/worktree-paths.ts"() {
+    "use strict";
+    import_crypto = require("crypto");
+    import_child_process = require("child_process");
+    import_fs = require("fs");
+    import_os = require("os");
+    import_path = require("path");
+    OmcPaths = {
+      ROOT: ".omc",
+      STATE: ".omc/state",
+      SESSIONS: ".omc/state/sessions",
+      PLANS: ".omc/plans",
+      RESEARCH: ".omc/research",
+      NOTEPAD: ".omc/notepad.md",
+      PROJECT_MEMORY: ".omc/project-memory.json",
+      DRAFTS: ".omc/drafts",
+      NOTEPADS: ".omc/notepads",
+      LOGS: ".omc/logs",
+      SCIENTIST: ".omc/scientist",
+      AUTOPILOT: ".omc/autopilot",
+      SKILLS: ".omc/skills",
+      SHARED_MEMORY: ".omc/state/shared-memory",
+      DEEPINIT_MANIFEST: ".omc/deepinit-manifest.json"
+    };
+  }
+});
+
+// src/utils/config-dir.ts
+function getConfigDir() {
+  return process.env.CLAUDE_CONFIG_DIR || (0, import_node_path.join)((0, import_node_os.homedir)(), ".claude");
+}
+var import_node_os, import_node_path;
+var init_config_dir = __esm({
+  "src/utils/config-dir.ts"() {
+    "use strict";
+    import_node_os = require("node:os");
+    import_node_path = require("node:path");
+  }
+});
+
+// src/utils/paths.ts
+function getClaudeConfigDir() {
+  return getConfigDir();
+}
+var import_path2, import_fs2, import_os2, STALE_THRESHOLD_MS;
+var init_paths = __esm({
+  "src/utils/paths.ts"() {
+    "use strict";
+    import_path2 = require("path");
+    import_fs2 = require("fs");
+    import_os2 = require("os");
+    init_config_dir();
+    STALE_THRESHOLD_MS = 24 * 60 * 60 * 1e3;
+  }
+});
+
+// src/hooks/learner/constants.ts
+var import_path3, import_os3, USER_SKILLS_DIR, GLOBAL_SKILLS_DIR, PROJECT_SKILLS_SUBDIR, PROJECT_AGENT_SKILLS_SUBDIR, DEBUG_ENABLED;
+var init_constants = __esm({
+  "src/hooks/learner/constants.ts"() {
+    "use strict";
+    import_path3 = require("path");
+    import_os3 = require("os");
+    init_paths();
+    init_worktree_paths();
+    USER_SKILLS_DIR = (0, import_path3.join)(getClaudeConfigDir(), "skills", "omc-learned");
+    GLOBAL_SKILLS_DIR = (0, import_path3.join)((0, import_os3.homedir)(), ".omc", "skills");
+    PROJECT_SKILLS_SUBDIR = OmcPaths.SKILLS;
+    PROJECT_AGENT_SKILLS_SUBDIR = (0, import_path3.join)(".agents", "skills");
+    DEBUG_ENABLED = process.env.OMC_DEBUG === "1";
+  }
+});
+
+// src/hooks/learner/finder.ts
+var import_fs3, import_path4;
+var init_finder = __esm({
+  "src/hooks/learner/finder.ts"() {
+    "use strict";
+    import_fs3 = require("fs");
+    import_path4 = require("path");
+    init_constants();
+  }
+});
+
+// src/hooks/learner/parser.ts
+var init_parser = __esm({
+  "src/hooks/learner/parser.ts"() {
+    "use strict";
+  }
+});
+
+// src/hooks/learner/loader.ts
+var import_fs5, import_crypto3, import_path6;
+var init_loader = __esm({
+  "src/hooks/learner/loader.ts"() {
+    "use strict";
+    import_fs5 = require("fs");
+    import_crypto3 = require("crypto");
+    import_path6 = require("path");
+    init_finder();
+    init_parser();
+    init_constants();
+  }
+});
 
 // src/hooks/learner/bridge.ts
 var bridge_exports = {};
 __export(bridge_exports, {
-  GLOBAL_SKILLS_DIR: () => GLOBAL_SKILLS_DIR,
-  PROJECT_AGENT_SKILLS_SUBDIR: () => PROJECT_AGENT_SKILLS_SUBDIR,
-  PROJECT_SKILLS_SUBDIR: () => PROJECT_SKILLS_SUBDIR,
-  SKILL_EXTENSION: () => SKILL_EXTENSION,
-  USER_SKILLS_DIR: () => USER_SKILLS_DIR,
+  GLOBAL_SKILLS_DIR: () => GLOBAL_SKILLS_DIR2,
+  PROJECT_AGENT_SKILLS_SUBDIR: () => PROJECT_AGENT_SKILLS_SUBDIR2,
+  PROJECT_SKILLS_SUBDIR: () => PROJECT_SKILLS_SUBDIR2,
+  SKILL_EXTENSION: () => SKILL_EXTENSION2,
+  USER_SKILLS_DIR: () => USER_SKILLS_DIR2,
   clearLevenshteinCache: () => clearLevenshteinCache,
   clearSkillMetadataCache: () => clearSkillMetadataCache,
-  findSkillFiles: () => findSkillFiles,
+  findSkillFiles: () => findSkillFiles2,
+  getAutoLearningSummary: () => getAutoLearningSummary,
   getInjectedSkillPaths: () => getInjectedSkillPaths,
   markSkillsInjected: () => markSkillsInjected,
   matchSkillsForInjection: () => matchSkillsForInjection,
-  parseSkillFile: () => parseSkillFile
+  notifyMessageCycle: () => notifyMessageCycle,
+  parseSkillFile: () => parseSkillFile2,
+  resetAutoLearningSession: () => resetAutoLearningSession
 });
 module.exports = __toCommonJS(bridge_exports);
-var import_fs2 = require("fs");
-var import_path2 = require("path");
-var import_os2 = require("os");
-
-// src/lib/worktree-paths.ts
-var import_crypto = require("crypto");
-var import_child_process = require("child_process");
-var import_fs = require("fs");
-var import_os = require("os");
-var import_path = require("path");
-var OmcPaths = {
-  ROOT: ".omc",
-  STATE: ".omc/state",
-  SESSIONS: ".omc/state/sessions",
-  PLANS: ".omc/plans",
-  RESEARCH: ".omc/research",
-  NOTEPAD: ".omc/notepad.md",
-  PROJECT_MEMORY: ".omc/project-memory.json",
-  DRAFTS: ".omc/drafts",
-  NOTEPADS: ".omc/notepads",
-  LOGS: ".omc/logs",
-  SCIENTIST: ".omc/scientist",
-  AUTOPILOT: ".omc/autopilot",
-  SKILLS: ".omc/skills",
-  SHARED_MEMORY: ".omc/state/shared-memory",
-  DEEPINIT_MANIFEST: ".omc/deepinit-manifest.json"
-};
+var import_fs15 = require("fs");
+var import_path14 = require("path");
+var import_os5 = require("os");
+init_worktree_paths();
 
 // src/hooks/learner/transliteration-map.ts
 var KOREAN_MAP = {
@@ -85,19 +186,243 @@ function expandTriggers(triggersLower) {
   return Array.from(expanded);
 }
 
+// src/hooks/learner/auto-writer.ts
+var import_crypto2 = require("crypto");
+
+// src/hooks/learner/writer.ts
+var import_fs4 = require("fs");
+var import_path5 = require("path");
+init_finder();
+init_parser();
+
+// src/hooks/learner/validator.ts
+init_constants();
+
+// src/hooks/learner/writer.ts
+init_constants();
+
+// src/hooks/learner/auto-writer.ts
+init_constants();
+var MAX_PER_SESSION = 3;
+var sessionAutoCreationCount = 0;
+var lastAutoCreationMessage = 0;
+var currentMessageCount = 0;
+var sessionContentHashes = /* @__PURE__ */ new Set();
+function incrementMessageCount() {
+  currentMessageCount++;
+}
+function resetSession() {
+  sessionAutoCreationCount = 0;
+  lastAutoCreationMessage = 0;
+  currentMessageCount = 0;
+  sessionContentHashes.clear();
+}
+function getAutoCreationStats() {
+  return {
+    count: sessionAutoCreationCount,
+    max: MAX_PER_SESSION,
+    remaining: MAX_PER_SESSION - sessionAutoCreationCount
+  };
+}
+
+// src/features/context-injector/collector.ts
+var PRIORITY_ORDER = {
+  critical: 0,
+  high: 1,
+  normal: 2,
+  low: 3
+};
+var CONTEXT_SEPARATOR = "\n\n---\n\n";
+var ContextCollector = class {
+  sessions = /* @__PURE__ */ new Map();
+  /**
+   * Register a context entry for a session.
+   * If an entry with the same source:id already exists, it will be replaced.
+   */
+  register(sessionId, options) {
+    if (!this.sessions.has(sessionId)) {
+      this.sessions.set(sessionId, /* @__PURE__ */ new Map());
+    }
+    const sessionMap = this.sessions.get(sessionId);
+    const key = `${options.source}:${options.id}`;
+    const entry = {
+      id: options.id,
+      source: options.source,
+      content: options.content,
+      priority: options.priority ?? "normal",
+      timestamp: Date.now(),
+      metadata: options.metadata
+    };
+    sessionMap.set(key, entry);
+  }
+  /**
+   * Get pending context for a session without consuming it.
+   */
+  getPending(sessionId) {
+    const sessionMap = this.sessions.get(sessionId);
+    if (!sessionMap || sessionMap.size === 0) {
+      return {
+        merged: "",
+        entries: [],
+        hasContent: false
+      };
+    }
+    const entries = this.sortEntries([...sessionMap.values()]);
+    const merged = entries.map((e) => e.content).join(CONTEXT_SEPARATOR);
+    return {
+      merged,
+      entries,
+      hasContent: entries.length > 0
+    };
+  }
+  /**
+   * Get and consume pending context for a session.
+   * After consumption, the session's context is cleared.
+   */
+  consume(sessionId) {
+    const pending = this.getPending(sessionId);
+    this.clear(sessionId);
+    return pending;
+  }
+  /**
+   * Clear all context for a session.
+   */
+  clear(sessionId) {
+    this.sessions.delete(sessionId);
+  }
+  /**
+   * Check if a session has pending context.
+   */
+  hasPending(sessionId) {
+    const sessionMap = this.sessions.get(sessionId);
+    return sessionMap !== void 0 && sessionMap.size > 0;
+  }
+  /**
+   * Get count of entries for a session.
+   */
+  getEntryCount(sessionId) {
+    const sessionMap = this.sessions.get(sessionId);
+    return sessionMap?.size ?? 0;
+  }
+  /**
+   * Remove a specific entry from a session.
+   */
+  removeEntry(sessionId, source, id) {
+    const sessionMap = this.sessions.get(sessionId);
+    if (!sessionMap) return false;
+    const key = `${source}:${id}`;
+    return sessionMap.delete(key);
+  }
+  /**
+   * Get all active session IDs.
+   */
+  getActiveSessions() {
+    return [...this.sessions.keys()];
+  }
+  /**
+   * Sort entries by priority (higher first) then by timestamp (earlier first).
+   */
+  sortEntries(entries) {
+    return entries.sort((a, b) => {
+      const priorityDiff = PRIORITY_ORDER[a.priority] - PRIORITY_ORDER[b.priority];
+      if (priorityDiff !== 0) return priorityDiff;
+      return a.timestamp - b.timestamp;
+    });
+  }
+};
+var contextCollector = new ContextCollector();
+
+// src/hooks/learner/index.ts
+init_loader();
+init_constants();
+
+// src/hooks/learner/config.ts
+var import_fs6 = require("fs");
+var import_path7 = require("path");
+init_paths();
+init_constants();
+var CONFIG_PATH = (0, import_path7.join)(getClaudeConfigDir(), "omc", "learner.json");
+
+// src/hooks/learner/index.ts
+init_constants();
+init_finder();
+init_parser();
+init_loader();
+
+// src/hooks/ralph/loop.ts
+var import_fs12 = require("fs");
+var import_path11 = require("path");
+
+// src/lib/mode-state-io.ts
+var import_fs7 = require("fs");
+var import_path8 = require("path");
+init_worktree_paths();
+
+// src/lib/atomic-write.ts
+var fs = __toESM(require("fs/promises"), 1);
+var fsSync = __toESM(require("fs"), 1);
+var path = __toESM(require("path"), 1);
+var crypto = __toESM(require("crypto"), 1);
+
+// src/hooks/ralph/prd.ts
+var import_fs8 = require("fs");
+var import_path9 = require("path");
+init_worktree_paths();
+
+// src/hooks/ralph/progress.ts
+var import_fs9 = require("fs");
+var import_path10 = require("path");
+init_worktree_paths();
+
+// src/hooks/ultrawork/index.ts
+var import_fs10 = require("fs");
+init_worktree_paths();
+
+// src/hooks/ralph/loop.ts
+init_worktree_paths();
+
+// src/hooks/team-pipeline/state.ts
+var import_fs11 = require("fs");
+init_worktree_paths();
+
+// src/hooks/ralph/verifier.ts
+var import_fs13 = require("fs");
+var import_path12 = require("path");
+init_worktree_paths();
+
+// src/utils/omc-cli-rendering.ts
+var import_child_process2 = require("child_process");
+
+// src/hooks/learner/auto-invoke.ts
+var import_fs14 = __toESM(require("fs"), 1);
+var import_path13 = __toESM(require("path"), 1);
+var import_os4 = __toESM(require("os"), 1);
+init_paths();
+
+// src/hooks/learner/auto-learner.ts
+var import_crypto4 = require("crypto");
+init_constants();
+
+// src/hooks/learner/detection-hook.ts
+init_constants();
+var sessionStates = /* @__PURE__ */ new Map();
+function getAutoCreatedPaths(sessionId) {
+  return sessionStates.get(sessionId)?.autoCreatedPaths ?? [];
+}
+
 // src/hooks/learner/bridge.ts
-var USER_SKILLS_DIR = (0, import_path2.join)(
-  (0, import_os2.homedir)(),
+var USER_SKILLS_DIR2 = (0, import_path14.join)(
+  (0, import_os5.homedir)(),
   ".claude",
   "skills",
   "omc-learned"
 );
-var GLOBAL_SKILLS_DIR = (0, import_path2.join)((0, import_os2.homedir)(), ".omc", "skills");
-var PROJECT_SKILLS_SUBDIR = OmcPaths.SKILLS;
-var PROJECT_AGENT_SKILLS_SUBDIR = (0, import_path2.join)(".agents", "skills");
-var SKILL_EXTENSION = ".md";
+var GLOBAL_SKILLS_DIR2 = (0, import_path14.join)((0, import_os5.homedir)(), ".omc", "skills");
+var PROJECT_SKILLS_SUBDIR2 = OmcPaths.SKILLS;
+var PROJECT_AGENT_SKILLS_SUBDIR2 = (0, import_path14.join)(".agents", "skills");
+var SKILL_EXTENSION2 = ".md";
 var SESSION_TTL_MS = 60 * 60 * 1e3;
-var MAX_RECURSION_DEPTH = 10;
+var MAX_RECURSION_DEPTH2 = 10;
 var LEVENSHTEIN_CACHE_SIZE = 1e3;
 var SKILL_CACHE_TTL_MS = 30 * 1e3;
 var MAX_CACHE_ENTRIES = 50;
@@ -130,16 +455,16 @@ function getSkillMetadataCache(projectRoot) {
     skillMetadataCache.set(projectRoot, cached);
     return cached.skills;
   }
-  const candidates = findSkillFiles(projectRoot);
+  const candidates = findSkillFiles2(projectRoot);
   const skills = [];
   for (const candidate of candidates) {
     try {
-      const content = (0, import_fs2.readFileSync)(candidate.path, "utf-8");
-      const parsed = parseSkillFile(content);
+      const content = (0, import_fs15.readFileSync)(candidate.path, "utf-8");
+      const parsed = parseSkillFile2(content);
       if (!parsed) continue;
       const triggers = parsed.metadata.triggers ?? [];
       if (triggers.length === 0) continue;
-      const name = parsed.metadata.name || (0, import_path2.basename)(candidate.path, SKILL_EXTENSION);
+      const name = parsed.metadata.name || (0, import_path14.basename)(candidate.path, SKILL_EXTENSION2);
       skills.push({
         path: candidate.path,
         name,
@@ -167,13 +492,13 @@ function clearLevenshteinCache() {
 }
 var STATE_FILE = `${OmcPaths.STATE}/skill-sessions.json`;
 function getStateFilePath(projectRoot) {
-  return (0, import_path2.join)(projectRoot, STATE_FILE);
+  return (0, import_path14.join)(projectRoot, STATE_FILE);
 }
 function readSessionState(projectRoot) {
   const stateFile = getStateFilePath(projectRoot);
   try {
-    if ((0, import_fs2.existsSync)(stateFile)) {
-      const content = (0, import_fs2.readFileSync)(stateFile, "utf-8");
+    if ((0, import_fs15.existsSync)(stateFile)) {
+      const content = (0, import_fs15.readFileSync)(stateFile, "utf-8");
       return JSON.parse(content);
     }
   } catch {
@@ -183,8 +508,8 @@ function readSessionState(projectRoot) {
 function writeSessionState(projectRoot, state) {
   const stateFile = getStateFilePath(projectRoot);
   try {
-    (0, import_fs2.mkdirSync)((0, import_path2.dirname)(stateFile), { recursive: true });
-    (0, import_fs2.writeFileSync)(stateFile, JSON.stringify(state, null, 2), "utf-8");
+    (0, import_fs15.mkdirSync)((0, import_path14.dirname)(stateFile), { recursive: true });
+    (0, import_fs15.writeFileSync)(stateFile, JSON.stringify(state, null, 2), "utf-8");
   } catch {
   }
 }
@@ -213,15 +538,15 @@ function markSkillsInjected(sessionId, paths, projectRoot) {
   writeSessionState(projectRoot, state);
 }
 function findSkillFilesRecursive(dir, results, depth = 0) {
-  if (!(0, import_fs2.existsSync)(dir)) return;
-  if (depth > MAX_RECURSION_DEPTH) return;
+  if (!(0, import_fs15.existsSync)(dir)) return;
+  if (depth > MAX_RECURSION_DEPTH2) return;
   try {
-    const entries = (0, import_fs2.readdirSync)(dir, { withFileTypes: true });
+    const entries = (0, import_fs15.readdirSync)(dir, { withFileTypes: true });
     for (const entry of entries) {
-      const fullPath = (0, import_path2.join)(dir, entry.name);
+      const fullPath = (0, import_path14.join)(dir, entry.name);
       if (entry.isDirectory()) {
         findSkillFilesRecursive(fullPath, results, depth + 1);
-      } else if (entry.isFile() && entry.name.endsWith(SKILL_EXTENSION)) {
+      } else if (entry.isFile() && entry.name.endsWith(SKILL_EXTENSION2)) {
         results.push(fullPath);
       }
     }
@@ -230,7 +555,7 @@ function findSkillFilesRecursive(dir, results, depth = 0) {
 }
 function safeRealpathSync(filePath) {
   try {
-    return (0, import_fs2.realpathSync)(filePath);
+    return (0, import_fs15.realpathSync)(filePath);
   } catch {
     return filePath;
   }
@@ -240,14 +565,14 @@ function isWithinBoundary(realPath, boundary) {
   const normalizedBoundary = safeRealpathSync(boundary).replace(/\\/g, "/").replace(/\/+/g, "/");
   return normalizedReal === normalizedBoundary || normalizedReal.startsWith(normalizedBoundary + "/");
 }
-function findSkillFiles(projectRoot, options) {
+function findSkillFiles2(projectRoot, options) {
   const candidates = [];
   const seenRealPaths = /* @__PURE__ */ new Set();
   const scope = options?.scope ?? "all";
   if (scope === "project" || scope === "all") {
     const projectSkillDirs = [
-      (0, import_path2.join)(projectRoot, PROJECT_SKILLS_SUBDIR),
-      (0, import_path2.join)(projectRoot, PROJECT_AGENT_SKILLS_SUBDIR)
+      (0, import_path14.join)(projectRoot, PROJECT_SKILLS_SUBDIR2),
+      (0, import_path14.join)(projectRoot, PROJECT_AGENT_SKILLS_SUBDIR2)
     ];
     for (const projectSkillsDir of projectSkillDirs) {
       const projectFiles = [];
@@ -267,7 +592,7 @@ function findSkillFiles(projectRoot, options) {
     }
   }
   if (scope === "user" || scope === "all") {
-    const userDirs = [GLOBAL_SKILLS_DIR, USER_SKILLS_DIR];
+    const userDirs = [GLOBAL_SKILLS_DIR2, USER_SKILLS_DIR2];
     for (const userDir of userDirs) {
       const userFiles = [];
       findSkillFilesRecursive(userDir, userFiles);
@@ -287,7 +612,7 @@ function findSkillFiles(projectRoot, options) {
   }
   return candidates;
 }
-function parseSkillFile(content) {
+function parseSkillFile2(content) {
   const frontmatterRegex = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/;
   const match = content.match(frontmatterRegex);
   if (!match) {
@@ -482,6 +807,18 @@ function matchSkillsForInjection(prompt, projectRoot, sessionId, options = {}) {
   matches.sort((a, b) => b.score - a.score);
   return matches.slice(0, maxResults);
 }
+function notifyMessageCycle() {
+  incrementMessageCount();
+}
+function resetAutoLearningSession() {
+  resetSession();
+}
+function getAutoLearningSummary(sessionId) {
+  return {
+    autoCreated: getAutoCreatedPaths(sessionId),
+    stats: getAutoCreationStats()
+  };
+}
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   GLOBAL_SKILLS_DIR,
@@ -492,8 +829,11 @@ function matchSkillsForInjection(prompt, projectRoot, sessionId, options = {}) {
   clearLevenshteinCache,
   clearSkillMetadataCache,
   findSkillFiles,
+  getAutoLearningSummary,
   getInjectedSkillPaths,
   markSkillsInjected,
   matchSkillsForInjection,
-  parseSkillFile
+  notifyMessageCycle,
+  parseSkillFile,
+  resetAutoLearningSession
 });

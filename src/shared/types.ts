@@ -39,6 +39,10 @@ export interface PluginConfig {
     codeSimplifier?: { model?: string };
     critic?: { model?: string };
     documentSpecialist?: { model?: string };
+    frontendDev?: { model?: string };
+    backendDev?: { model?: string };
+    dbDev?: { model?: string };
+    researcher?: { model?: string };
   };
 
   // Feature toggles

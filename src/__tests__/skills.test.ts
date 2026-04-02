@@ -35,10 +35,10 @@ describe('Builtin Skills', () => {
   });
 
   describe('createBuiltinSkills()', () => {
-    it('should return correct number of skills (31 canonical + 1 alias)', () => {
+    it('should return correct number of skills (36 canonical + 1 alias)', () => {
       const skills = createBuiltinSkills();
-      // 32 entries: 31 canonical skills + 1 deprecated alias (psm)
-      expect(skills).toHaveLength(32);
+      // 37 entries: 36 canonical skills + 1 deprecated alias (psm)
+      expect(skills).toHaveLength(37);
     });
 
     it('should return an array of BuiltinSkill objects', () => {
@@ -120,6 +120,11 @@ describe('Builtin Skills', () => {
         'ultrawork',
         'visual-verdict',
         'writer-memory',
+        'todos',
+        'ui-specs',
+        'deep-research',
+        'plan-all',
+        'build-all',
       ];
 
       const actualSkillNames = skills.map((s) => s.name);
@@ -329,7 +334,7 @@ describe('Builtin Skills', () => {
     it('should return canonical skill names by default', () => {
       const names = listBuiltinSkillNames();
 
-      expect(names).toHaveLength(31);
+      expect(names).toHaveLength(36);
       expect(names).toContain('ai-slop-cleaner');
       expect(names).toContain('ask');
       expect(names).toContain('autopilot');
@@ -348,6 +353,11 @@ describe('Builtin Skills', () => {
       expect(names).toContain('setup');
       expect(names).toContain('trace');
       expect(names).toContain('visual-verdict');
+      expect(names).toContain('todos');
+      expect(names).toContain('ui-specs');
+      expect(names).toContain('deep-research');
+      expect(names).toContain('plan-all');
+      expect(names).toContain('build-all');
       expect(names).not.toContain('swarm'); // removed in #1131
       expect(names).not.toContain('psm');
     });
@@ -363,7 +373,7 @@ describe('Builtin Skills', () => {
       const names = listBuiltinSkillNames({ includeAliases: true });
 
       // swarm alias removed in #1131, psm still exists
-      expect(names).toHaveLength(32);
+      expect(names).toHaveLength(37);
       expect(names).toContain('ai-slop-cleaner');
       expect(names).toContain('trace');
       expect(names).toContain('visual-verdict');
