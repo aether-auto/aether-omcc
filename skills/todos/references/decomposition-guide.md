@@ -1,50 +1,66 @@
 # Decomposition Guide
 
-Rules for breaking a plan into exhaustive, well-structured TODO items.
+Rules for breaking a plan into feature-sized, well-structured TODO items that produce visible, verifiable results.
 
 ## Core Principles
 
-### 1. Vertical Slices Over Horizontal Layers
+### 1. Feature-Sized Vertical Slices
 
-**DO**: Create TODOs that deliver end-to-end value across the stack.
-```
-TODO-010: Implement user registration
-  - Data: User model, migration
-  - API: POST /api/auth/register
-  - UI: Registration form, validation feedback
-```
+Each TODO should deliver a **complete, user-visible feature** that bundles data, API, and UI together. The user should be able to see and interact with the result after each TODO is completed.
 
-**DON'T**: Create TODOs that only address one layer.
+**DO**: Bundle the full stack for a feature into one TODO.
 ```
-TODO-010: Create User model          (horizontal -- no value alone)
-TODO-011: Create registration API     (horizontal -- no value alone)
-TODO-012: Create registration form    (horizontal -- no value alone)
+TODO-003: Implement user authentication
+  - Data: User model, session/token storage
+  - API: POST /auth/register, POST /auth/login, POST /auth/logout, GET /auth/me
+  - UI: Registration page, login page, auth state in navbar
+  - Result: User can register, log in, see their name in the header, and log out
 ```
 
-Exception: Foundation tasks (base models, shared layouts, auth setup) are legitimately thin slices because they enable many features.
+**DON'T**: Create separate TODOs per layer or per endpoint.
+```
+TODO-003: Create User model          (too small -- no visible result)
+TODO-004: Create registration API     (too small -- no visible result)
+TODO-005: Create login API            (too small -- no visible result)
+TODO-006: Create registration form    (too small -- no visible result)
+TODO-007: Create login form           (too small -- no visible result)
+```
 
-### 2. INVEST Quality Validation
+The first approach is ONE TODO. The second is FIVE TODOs that each produce nothing the user can verify until all five are done. Always prefer the first approach.
 
-Every TODO must pass INVEST criteria:
+Exception: Foundation tasks (project setup, base layout, shared config) are allowed to be infrastructure-only since they enable all subsequent features.
 
-| Criterion | Test | Fail Example |
-|-----------|------|--------------|
-| **I**ndependent | Can be completed without waiting for unrelated TODOs | "Implement search" depends on "Implement CSS framework" |
-| **N**egotiable | Implementation details are flexible | "Use exactly this SQL query" (over-specified) |
-| **V**aluable | Delivers something the user/stakeholder cares about | "Refactor internal helper" with no visible impact |
-| **E**stimable | Can estimate effort with reasonable confidence | "Integrate with TBD third-party service" |
-| **S**ized | Fits the 8/80 guideline (1-4 hours agent work) | "Implement entire auth system" (too large) |
-| **T**estable | Has specific, verifiable acceptance criteria | "App should feel fast" (not testable) |
+### 2. Target 8-15 TODOs Per Project
 
-### 3. The 8/80 Guideline
+A good TODO list has **8-15 items** for a typical project. Adjust for complexity:
+- Simple project (landing page, basic CRUD): 5-8 TODOs
+- Medium project (multi-page app with auth): 8-12 TODOs
+- Complex project (real-time, payments, integrations): 12-15 TODOs
 
-Each TODO should represent 1-4 hours of focused agent work.
+**If you have more than 15 TODOs, you are splitting too fine.** Merge related TODOs until you're in range.
 
-**Too small** (under 1 hour): Merge with a related TODO.
-- "Add email field to User model" -- merge into the User registration TODO.
+**If you have fewer than 5 TODOs, you are bundling too much.** Split large TODOs that cover 4+ screens or 10+ endpoints.
 
-**Too large** (over 4 hours): Split into smaller vertical slices.
-- "Implement authentication system" -- split into: registration, login, logout, password reset, session management, role-based access.
+### 3. Each TODO Must Be User-Verifiable
+
+After completing a TODO, the user should be able to:
+- Open the app and see something new or changed
+- Interact with a feature (click, submit, navigate)
+- Verify it works without reading code
+
+**Verifiable**: "Implement task dashboard — user sees their tasks, can filter by status, click to view details"
+**Not verifiable**: "Create Task model and add indexes" — nothing visible to the user
+
+### 4. INVEST Quality (Adapted)
+
+| Criterion | Test |
+|-----------|------|
+| **I**ndependent | Can be completed without waiting for unrelated TODOs |
+| **N**egotiable | Implementation details are flexible |
+| **V**aluable | Delivers a visible feature the user can verify |
+| **E**stimable | Scope is clear enough to estimate |
+| **S**ized | Feature-sized — not a micro-task, not the whole app |
+| **T**estable | Has specific, verifiable acceptance criteria |
 
 ## Decomposition Order
 
@@ -150,19 +166,24 @@ Apply these patterns based on the type of work in each TODO:
 - Cleanup on upload failure (no orphaned files)
 - Files accessible after upload
 
-## Exhaustiveness Checklist
+## Coverage & Size Checklist
 
 After generating all TODOs, verify:
 
-- [ ] Every API endpoint mentioned in the plan has a TODO
-- [ ] Every data model mentioned in the plan has a TODO
-- [ ] Every UI screen/page mentioned in the plan has a TODO
-- [ ] Every integration point mentioned in the plan has a TODO
-- [ ] Error handling is covered
-- [ ] Testing is covered (at the level specified in the plan)
-- [ ] Auth and authorization are fully covered
-- [ ] Database migrations are covered
-- [ ] Configuration and environment setup is covered
+**Coverage (every plan item is accounted for in at least one TODO):**
+- [ ] Every API endpoint is covered by a TODO (multiple endpoints per TODO is expected)
+- [ ] Every data model is covered by a TODO (bundled with its feature)
+- [ ] Every UI screen/page is covered by a TODO (bundled with its backend)
+- [ ] Every integration point is covered
+- [ ] Auth, error handling, database setup, and config are covered
+
+**Quality:**
 - [ ] No TODO has fewer than 3 acceptance criteria
+- [ ] Each TODO produces a visible, verifiable result the user can see
 - [ ] All dependencies form a valid DAG
 - [ ] All TODOs pass INVEST criteria
+
+**Size:**
+- [ ] Total TODO count is between 5-15 (merge if over 15, split if under 5)
+- [ ] No TODO is so large it covers 4+ screens or 10+ endpoints
+- [ ] No TODO is so small it only touches one layer with no visible result

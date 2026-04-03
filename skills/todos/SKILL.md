@@ -6,7 +6,7 @@ level: 3
 
 # TODO Generation (Exhaustive Checklists)
 
-Generate formal, trackable TODO items with detailed acceptance criteria from planning artifacts. Every aspect of the project MUST be covered -- nothing is left implicit.
+Generate formal, trackable TODO items with detailed acceptance criteria from planning artifacts. Every aspect of the project MUST be covered -- nothing is left implicit. TODOs should be **feature-sized** (not micro-tasks) so each one delivers a visible, verifiable change the user can see and interact with.
 
 ## Usage
 
@@ -50,14 +50,15 @@ Extract EVERY deliverable from the plan:
 - Every error handling requirement
 - Every testing requirement (unit, integration, e2e)
 
-### Step 3: Decompose into Vertical Slices
+### Step 3: Decompose into Feature-Sized Vertical Slices
 
 Follow the decomposition rules in `references/decomposition-guide.md`:
 
-- **Vertical slices**: Each TODO delivers end-to-end value (data + API + UI), not a horizontal layer.
-- **INVEST quality**: Independent, Negotiable, Valuable, Estimable, Sized, Testable.
-- **8/80 guideline**: Each task should take 1-4 hours of focused agent work.
-- **Foundation first**: Auth, base models, shared layouts, and config are the earliest TODOs.
+- **Feature-sized, not micro-tasks**: Each TODO should deliver a complete, visible feature the user can see and verify. Bundle the data model, API endpoints, AND UI for a feature into ONE TODO. Example: "Implement user authentication (registration page, login page, JWT endpoints, user model)" is ONE TODO, not four.
+- **Target 8-15 TODOs for a typical project**: A TODO list with 30+ items is too granular. Merge related deliverables into cohesive features. If you have more than 15 TODOs, consolidate — group by user-facing feature, not by technical layer.
+- **Each TODO must produce a verifiable change**: After completing a TODO, the user should be able to open the app and see something different. A TODO that only creates a database migration with no API or UI is too small — bundle it with the feature that uses it.
+- **Vertical slices**: Each TODO includes data + API + UI for its feature (mark sections N/A if not applicable). Never create separate TODOs for "create User model", "create User API", "create User page" — that's one TODO: "Implement user management".
+- **Foundation TODOs are the exception**: Project setup, auth infrastructure, and base layout are allowed to be backend/config-only since they enable all subsequent features.
 - **Domain-specific criteria**: Apply the checklist patterns from `references/checklist-patterns.md` based on task type.
 
 ### Step 4: Write TODO Files
@@ -89,26 +90,31 @@ Create `.omc/todos/INDEX.md` containing:
 3. **Dependency DAG**: A text-based directed acyclic graph showing execution order. Use ASCII or Mermaid syntax. Group by execution tier (foundation -> core features -> secondary features -> polish).
 4. **Critical path**: Identify the longest dependency chain and note it.
 
-### Step 6: Exhaustiveness Verification
+### Step 6: Coverage & Quality Verification
 
 **This step is mandatory.** Before completing, verify ALL of the following:
 
-- [ ] Every API endpoint in the plan has a corresponding TODO
-- [ ] Every data model in the plan has a corresponding TODO
-- [ ] Every UI screen/page in the plan has a corresponding TODO
-- [ ] Every integration point in the plan has a corresponding TODO
-- [ ] Auth and authorization are fully covered (registration, login, logout, role checks, token management)
-- [ ] Error handling is covered (validation errors, server errors, network errors, edge cases)
-- [ ] Database migrations and seed data are covered
-- [ ] Configuration and environment setup is covered
-- [ ] Testing is covered (unit tests, integration tests, e2e tests as specified in plan)
+**Coverage (every item in the plan is accounted for in at least one TODO):**
+- [ ] Every API endpoint in the plan is covered by a TODO (multiple endpoints can be in one TODO)
+- [ ] Every data model in the plan is covered by a TODO (bundled with the feature that uses it)
+- [ ] Every UI screen/page in the plan is covered by a TODO (bundled with its backend)
+- [ ] Every integration point in the plan is covered by a TODO
+- [ ] Auth and authorization are fully covered
+- [ ] Error handling, database setup, and configuration are covered
+
+**Quality (TODOs are well-formed and actionable):**
 - [ ] No TODO has fewer than 3 acceptance criteria
-- [ ] All acceptance criteria contain concrete, testable values
+- [ ] All acceptance criteria contain concrete, testable values (endpoints, screen names, behaviors)
+- [ ] Each TODO produces a visible, verifiable change (user can see/interact with the result)
 - [ ] Dependencies form a valid DAG (no circular dependencies)
 - [ ] Foundation tasks have no dependencies or only depend on other foundation tasks
-- [ ] Priority assignments follow the mapping: core MVP -> must-have, secondary MVP -> should-have, future -> could-have
 
-If any check fails, add the missing TODOs or fix the issues before proceeding.
+**Size (not too many, not too few):**
+- [ ] Total TODO count is between 5-15 for a typical project (adjust for project complexity)
+- [ ] No TODO is so large it covers more than 3-4 screens or 8+ endpoints (split if so)
+- [ ] No TODO is so small it only touches one layer without a visible result (merge if so)
+
+If any check fails, merge or split TODOs as needed before proceeding.
 
 ## Completion
 
