@@ -28,6 +28,14 @@ One sentence: what this delivers and why.
 - [ ] Another testable criterion
 - [ ] At least 3 criteria per TODO
 
+## Playwright Verification
+Steps for physically testing UI changes with Playwright MCP tools. Empty if no UI changes.
+
+- [ ] Navigate to {page/route} and verify {expected content} is visible
+- [ ] Click {element} and verify {expected behavior}
+- [ ] Fill {form} with {data} and submit, verify {expected result}
+- [ ] (empty if this TODO has no UI changes)
+
 ## Dependencies
 - TODO-XXX: reason for dependency
 
@@ -72,6 +80,13 @@ One sentence: what this delivers and why.
   - Bad: "User creation works" (not specific)
 - Each criterion MUST be independently verifiable.
 - Use domain-specific patterns from `checklist-patterns.md` based on the task type.
+
+### Playwright Verification
+- This section lists concrete Playwright browser test steps for any UI change in the TODO.
+- Each item should be a specific action + expected result (e.g., "Navigate to /login and verify email and password fields are visible").
+- If the TODO has no UI changes (backend-only, config-only), this section should say "No UI changes to test."
+- These steps are used by the qa-tester agent in the verification step to physically test the app with Playwright MCP tools.
+- Items are drawn from the project-wide checklist at `.omc/checklists/project-checklist.md` — each TODO gets the subset relevant to its feature.
 
 ### Description Sections
 - **Data**: Models, fields, types, relationships, migrations. Write "N/A" if no data changes.

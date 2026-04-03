@@ -12,6 +12,7 @@ export const STAGE_ORDER = [
     "ralplan",
     "research",
     "ui-specs",
+    "checklist",
     "todos",
     "execution",
     "ralph",

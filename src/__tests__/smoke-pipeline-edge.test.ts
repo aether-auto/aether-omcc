@@ -181,7 +181,7 @@ describe('EDGE: Pipeline Orchestrator (issue #1132)', () => {
     }
 
     // Must pass through each active stage and end at complete
-    const expectedOrder = ['research', 'ui-specs', 'todos', 'execution', 'ralph', 'qa', 'complete'];
+    const expectedOrder = ['research', 'ui-specs', 'checklist', 'todos', 'execution', 'ralph', 'qa', 'complete'];
     expect(phases).toEqual(expectedOrder);
   });
 
@@ -229,9 +229,9 @@ describe('EDGE: Pipeline Orchestrator (issue #1132)', () => {
     expect(hud).not.toMatch(/\[\.\.\]/);
   });
 
-  it('STAGE_ORDER contains exactly the seven expected stages', () => {
-    expect(STAGE_ORDER).toHaveLength(7);
-    expect([...STAGE_ORDER]).toEqual(['ralplan', 'research', 'ui-specs', 'todos', 'execution', 'ralph', 'qa']);
+  it('STAGE_ORDER contains exactly the eight expected stages', () => {
+    expect(STAGE_ORDER).toHaveLength(8);
+    expect([...STAGE_ORDER]).toEqual(['ralplan', 'research', 'ui-specs', 'checklist', 'todos', 'execution', 'ralph', 'qa']);
   });
 
   it('DEFAULT_PIPELINE_CONFIG has expected default values', () => {

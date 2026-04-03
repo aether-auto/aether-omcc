@@ -32,6 +32,7 @@ import {
   ralplanAdapter,
   researchAdapter,
   uiSpecsAdapter,
+  checklistAdapter,
   todosAdapter,
   executionAdapter,
   ralphAdapter,
@@ -39,6 +40,7 @@ import {
   RALPLAN_COMPLETION_SIGNAL,
   RESEARCH_COMPLETION_SIGNAL,
   UI_SPECS_COMPLETION_SIGNAL,
+  CHECKLIST_COMPLETION_SIGNAL,
   TODOS_COMPLETION_SIGNAL,
   EXECUTION_COMPLETION_SIGNAL,
   RALPH_COMPLETION_SIGNAL,
@@ -50,8 +52,8 @@ import {
 import { readAutopilotState } from '../state.js';
 
 describe('Pipeline Types', () => {
-  it('should have 7 stages in canonical order', () => {
-    expect(STAGE_ORDER).toEqual(['ralplan', 'research', 'ui-specs', 'todos', 'execution', 'ralph', 'qa']);
+  it('should have 8 stages in canonical order', () => {
+    expect(STAGE_ORDER).toEqual(['ralplan', 'research', 'ui-specs', 'checklist', 'todos', 'execution', 'ralph', 'qa']);
   });
 
   it('should define default pipeline config', () => {
@@ -72,15 +74,16 @@ describe('Pipeline Types', () => {
 });
 
 describe('Stage Adapters', () => {
-  it('should have 7 adapters in order', () => {
-    expect(ALL_ADAPTERS).toHaveLength(7);
-    expect(ALL_ADAPTERS.map(a => a.id)).toEqual(['ralplan', 'research', 'ui-specs', 'todos', 'execution', 'ralph', 'qa']);
+  it('should have 8 adapters in order', () => {
+    expect(ALL_ADAPTERS).toHaveLength(8);
+    expect(ALL_ADAPTERS.map(a => a.id)).toEqual(['ralplan', 'research', 'ui-specs', 'checklist', 'todos', 'execution', 'ralph', 'qa']);
   });
 
   it('should look up adapters by id', () => {
     expect(getAdapterById('ralplan')).toBe(ralplanAdapter);
     expect(getAdapterById('research')).toBe(researchAdapter);
     expect(getAdapterById('ui-specs')).toBe(uiSpecsAdapter);
+    expect(getAdapterById('checklist')).toBe(checklistAdapter);
     expect(getAdapterById('todos')).toBe(todosAdapter);
     expect(getAdapterById('execution')).toBe(executionAdapter);
     expect(getAdapterById('ralph')).toBe(ralphAdapter);
@@ -235,9 +238,9 @@ describe('getDeprecationWarning', () => {
 });
 
 describe('buildPipelineTracking', () => {
-  it('should create stages for all 7 stages with default config', () => {
+  it('should create stages for all 8 stages with default config', () => {
     const tracking = buildPipelineTracking(DEFAULT_PIPELINE_CONFIG);
-    expect(tracking.stages).toHaveLength(7);
+    expect(tracking.stages).toHaveLength(8);
     expect(tracking.stages.map(s => s.id)).toEqual(STAGE_ORDER);
     expect(tracking.stages.every(s => s.status === 'pending')).toBe(true);
     expect(tracking.currentStageIndex).toBe(0);
@@ -252,12 +255,13 @@ describe('buildPipelineTracking', () => {
     };
     const tracking = buildPipelineTracking(config);
     expect(tracking.stages[0].status).toBe('skipped'); // ralplan
-    expect(tracking.stages[1].status).toBe('pending'); // research (always active)
-    expect(tracking.stages[2].status).toBe('pending'); // ui-specs (always active)
-    expect(tracking.stages[3].status).toBe('pending'); // todos (always active)
-    expect(tracking.stages[4].status).toBe('pending'); // execution
-    expect(tracking.stages[5].status).toBe('skipped'); // ralph
-    expect(tracking.stages[6].status).toBe('skipped'); // qa
+    expect(tracking.stages[1].status).toBe('pending'); // research
+    expect(tracking.stages[2].status).toBe('pending'); // ui-specs
+    expect(tracking.stages[3].status).toBe('pending'); // checklist
+    expect(tracking.stages[4].status).toBe('pending'); // todos
+    expect(tracking.stages[5].status).toBe('pending'); // execution
+    expect(tracking.stages[6].status).toBe('skipped'); // ralph
+    expect(tracking.stages[7].status).toBe('skipped'); // qa
     expect(tracking.currentStageIndex).toBe(1); // first non-skipped (research)
   });
 
@@ -270,7 +274,7 @@ describe('buildPipelineTracking', () => {
 describe('getActiveAdapters', () => {
   it('should return all adapters with default config', () => {
     const adapters = getActiveAdapters(DEFAULT_PIPELINE_CONFIG);
-    expect(adapters).toHaveLength(7);
+    expect(adapters).toHaveLength(8);
   });
 
   it('should exclude skipped adapters', () => {
@@ -281,8 +285,8 @@ describe('getActiveAdapters', () => {
       qa: true,
     };
     const adapters = getActiveAdapters(config);
-    expect(adapters).toHaveLength(5);
-    expect(adapters.map(a => a.id)).toEqual(['research', 'ui-specs', 'todos', 'execution', 'qa']);
+    expect(adapters).toHaveLength(6);
+    expect(adapters.map(a => a.id)).toEqual(['research', 'ui-specs', 'checklist', 'todos', 'execution', 'qa']);
   });
 });
 
@@ -292,6 +296,7 @@ describe('Signal mapping', () => {
     expect(map.get(RALPLAN_COMPLETION_SIGNAL)).toBe('ralplan');
     expect(map.get(RESEARCH_COMPLETION_SIGNAL)).toBe('research');
     expect(map.get(UI_SPECS_COMPLETION_SIGNAL)).toBe('ui-specs');
+    expect(map.get(CHECKLIST_COMPLETION_SIGNAL)).toBe('checklist');
     expect(map.get(TODOS_COMPLETION_SIGNAL)).toBe('todos');
     expect(map.get(EXECUTION_COMPLETION_SIGNAL)).toBe('execution');
     expect(map.get(RALPH_COMPLETION_SIGNAL)).toBe('ralph');
@@ -320,7 +325,7 @@ describe('Pipeline Orchestrator (with state)', () => {
 
       const tracking = readPipelineTracking(state!);
       expect(tracking).not.toBeNull();
-      expect(tracking!.stages).toHaveLength(7);
+      expect(tracking!.stages).toHaveLength(8);
       expect(tracking!.stages[0].status).toBe('active'); // first stage activated
       expect(tracking!.stages[0].startedAt).toBeTruthy();
     });
@@ -333,7 +338,7 @@ describe('Pipeline Orchestrator (with state)', () => {
       const tracking = readPipelineTracking(state!);
       expect(tracking!.pipelineConfig.execution).toBe('team');
       expect(tracking!.pipelineConfig.verification).toBe(false);
-      expect(tracking!.stages[5].status).toBe('skipped'); // ralph skipped (index 5 in 7-stage pipeline)
+      expect(tracking!.stages[6].status).toBe('skipped'); // ralph skipped (index 6 in 8-stage pipeline)
     });
 
     it('should handle deprecated mode names', () => {
@@ -393,7 +398,9 @@ describe('Pipeline Orchestrator (with state)', () => {
       advanceStage(testDir);
       // Advance past research -> ui-specs
       advanceStage(testDir);
-      // Advance past ui-specs -> todos
+      // Advance past ui-specs -> checklist
+      advanceStage(testDir);
+      // Advance past checklist -> todos
       advanceStage(testDir);
       // Advance past todos -> execution
       advanceStage(testDir);
@@ -413,7 +420,9 @@ describe('Pipeline Orchestrator (with state)', () => {
       // planning skipped, starts at research
       // Advance past research -> ui-specs
       advanceStage(testDir);
-      // Advance past ui-specs -> todos
+      // Advance past ui-specs -> checklist
+      advanceStage(testDir);
+      // Advance past checklist -> todos
       advanceStage(testDir);
       // Advance past todos -> execution
       advanceStage(testDir);
@@ -456,10 +465,10 @@ describe('Pipeline Orchestrator (with state)', () => {
 
       expect(status.currentStage).toBe('ralplan');
       expect(status.completedStages).toEqual([]);
-      expect(status.pendingStages).toEqual(['research', 'ui-specs', 'todos', 'execution', 'ralph', 'qa']);
+      expect(status.pendingStages).toEqual(['research', 'ui-specs', 'checklist', 'todos', 'execution', 'ralph', 'qa']);
       expect(status.skippedStages).toEqual([]);
       expect(status.isComplete).toBe(false);
-      expect(status.progress).toBe('0/7 stages');
+      expect(status.progress).toBe('0/8 stages');
     });
 
     it('should show progress after advancing', () => {
@@ -472,7 +481,7 @@ describe('Pipeline Orchestrator (with state)', () => {
 
       expect(status.currentStage).toBe('research');
       expect(status.completedStages).toEqual(['ralplan']);
-      expect(status.progress).toBe('1/7 stages');
+      expect(status.progress).toBe('1/8 stages');
     });
   });
 
@@ -484,7 +493,7 @@ describe('Pipeline Orchestrator (with state)', () => {
 
       expect(hud).toContain('[>>]'); // active stage
       expect(hud).toContain('[..]'); // pending stages
-      expect(hud).toContain('0/7 stages');
+      expect(hud).toContain('0/8 stages');
     });
 
     it('should show skipped stages', () => {

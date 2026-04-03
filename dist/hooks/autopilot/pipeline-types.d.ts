@@ -11,7 +11,7 @@
  * Pipeline stage identifiers in execution order.
  * Each stage is optional and can be skipped via configuration.
  */
-export type PipelineStageId = "ralplan" | "research" | "ui-specs" | "todos" | "execution" | "ralph" | "qa";
+export type PipelineStageId = "ralplan" | "research" | "ui-specs" | "checklist" | "todos" | "execution" | "ralph" | "qa";
 /** Terminal pipeline states */
 export type PipelineTerminalState = "complete" | "failed" | "cancelled";
 /** All possible pipeline phase values (stages + terminal) */

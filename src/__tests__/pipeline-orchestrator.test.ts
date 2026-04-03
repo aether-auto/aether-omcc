@@ -107,9 +107,9 @@ describe('Pipeline Orchestrator', () => {
   // =========================================================================
 
   describe('buildPipelineTracking', () => {
-    it('creates 7 stages matching STAGE_ORDER', () => {
+    it('creates 8 stages matching STAGE_ORDER', () => {
       const tracking = buildPipelineTracking(DEFAULT_PIPELINE_CONFIG);
-      expect(tracking.stages).toHaveLength(7);
+      expect(tracking.stages).toHaveLength(8);
       expect(tracking.stages.map(s => s.id)).toEqual(STAGE_ORDER);
     });
 
@@ -298,7 +298,7 @@ describe('Pipeline Orchestrator', () => {
 
   describe('constants', () => {
     it('STAGE_ORDER has correct sequence', () => {
-      expect(STAGE_ORDER).toEqual(['ralplan', 'research', 'ui-specs', 'todos', 'execution', 'ralph', 'qa']);
+      expect(STAGE_ORDER).toEqual(['ralplan', 'research', 'ui-specs', 'checklist', 'todos', 'execution', 'ralph', 'qa']);
     });
 
     it('DEPRECATED_MODE_ALIASES has ultrawork and ultrapilot', () => {
