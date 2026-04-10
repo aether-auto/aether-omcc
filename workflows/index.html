@@ -1,0 +1,1706 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Intelligent Multi-Agent Orchestration for Claude Code">
+      
+      
+      
+        <link rel="canonical" href="https://aether-auto.github.io/aether-omcc/workflows/">
+      
+      
+        <link rel="prev" href="../agents/">
+      
+      
+        <link rel="next" href="../configuration/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/logo.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Workflows - Aether OMCC</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="cyan">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#workflows" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Aether OMCC" class="md-header__button md-logo" aria-label="Aether OMCC" data-md-component="logo">
+      
+  <img src="../assets/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Aether OMCC
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Workflows
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="cyan"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="cyan"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/aether-auto/aether-omcc" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aether-auto/aether-omcc
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Aether OMCC" class="md-nav__button md-logo" aria-label="Aether OMCC" data-md-component="logo">
+      
+  <img src="../assets/logo.svg" alt="logo">
+
+    </a>
+    Aether OMCC
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/aether-auto/aether-omcc" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aether-auto/aether-omcc
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pipeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pipeline Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../skills/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Skills Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../agents/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agents Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#full-build" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Full Build
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Full Build">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Steps
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#planning-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Planning Only
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Planning Only">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#steps_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Steps
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bug-fixing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug Fixing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Bug Fixing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#steps_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Steps
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick-execution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick Execution
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Quick Execution">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#steps_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Steps
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#persistence-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Persistence Mode
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Persistence Mode">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#steps_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Steps
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Properties
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#idea-capture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Idea Capture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Idea Capture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#steps_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Steps
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#auto-learning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Auto-Learning
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Auto-Learning">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-it-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Works
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-gets-learned" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Gets Learned
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#multi-agent-research" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multi-Agent Research
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Multi-Agent Research">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#steps_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Steps
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#evidence-driven-tracing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evidence-Driven Tracing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Evidence-Driven Tracing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#steps_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Steps
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#iterative-feature-by-feature" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Iterative Feature-by-Feature
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Iterative Feature-by-Feature">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#when-to-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to Use
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-1-initialize-the-project" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Initialize the Project
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-build-features-one-at-a-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Build Features One at a Time
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-repeat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Repeat
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#comparison-with-build-all" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Comparison with /build-all
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../faq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FAQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#full-build" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Full Build
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Full Build">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Steps
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#planning-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Planning Only
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Planning Only">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#steps_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Steps
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bug-fixing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug Fixing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Bug Fixing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#steps_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Steps
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick-execution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick Execution
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Quick Execution">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#steps_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Steps
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#persistence-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Persistence Mode
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Persistence Mode">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#steps_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Steps
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Properties
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#idea-capture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Idea Capture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Idea Capture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#steps_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Steps
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#auto-learning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Auto-Learning
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Auto-Learning">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-it-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It Works
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-gets-learned" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Gets Learned
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#multi-agent-research" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multi-Agent Research
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Multi-Agent Research">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#steps_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Steps
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#evidence-driven-tracing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evidence-Driven Tracing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Evidence-Driven Tracing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#steps_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Steps
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#iterative-feature-by-feature" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Iterative Feature-by-Feature
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Iterative Feature-by-Feature">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#when-to-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to Use
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-1-initialize-the-project" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Initialize the Project
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-build-features-one-at-a-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Build Features One at a Time
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-repeat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Repeat
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#comparison-with-build-all" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Comparison with /build-all
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="workflows">Workflows<a class="headerlink" href="#workflows" title="Permanent link">&para;</a></h1>
+<p>Step-by-step guides for the most common aether-omcc workflows.</p>
+<hr />
+<h2 id="full-build">Full Build<a class="headerlink" href="#full-build" title="Permanent link">&para;</a></h2>
+<p><strong>Command:</strong> <code>/aether-omcc:build-all "your idea"</code></p>
+<p>The complete pipeline from idea to working code.</p>
+<h3 id="steps">Steps<a class="headerlink" href="#steps" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>sequenceDiagram
+    participant U as User
+    participant DI as Deep Interview
+    participant RP as Ralplan
+    participant DR as Deep Research
+    participant UI as UI Specs
+    participant CL as Checklist
+    participant TD as TODOs
+    participant AP as Autopilot
+
+    U-&gt;&gt;DI: "Build a task manager with drag-and-drop"
+    DI-&gt;&gt;U: Multi-round Q&amp;A (0% ambiguity)
+    U-&gt;&gt;DI: Answers
+    DI-&gt;&gt;RP: Crystal-clear specification
+    RP-&gt;&gt;RP: Planner -&gt; Architect -&gt; Critic loop
+    RP-&gt;&gt;DR: Approved plan
+    DR-&gt;&gt;DR: 5-10 parallel researchers
+    DR-&gt;&gt;UI: Research artifacts
+    UI-&gt;&gt;UI: Design tokens + page specs
+    UI-&gt;&gt;CL: UI specifications
+    CL-&gt;&gt;CL: Every interaction cataloged
+    CL-&gt;&gt;TD: Exhaustive test checklist
+    TD-&gt;&gt;U: 8-15 feature-sized TODOs
+    U-&gt;&gt;AP: Approved!
+    loop Per TODO
+        AP-&gt;&gt;AP: Plan -&gt; Execute -&gt; Verify
+    end
+    AP-&gt;&gt;U: Working, validated code</code></pre>
+<ol>
+<li><strong>Start the pipeline</strong> with your idea description (2-3 sentences is enough)</li>
+<li><strong>Answer interview questions</strong> -- the system asks multi-round questions until all ambiguity is eliminated</li>
+<li><strong>Review the plan</strong> -- consensus plan from Planner, Architect, and Critic</li>
+<li><strong>Wait for research</strong> -- parallel researchers investigate relevant technologies</li>
+<li><strong>Review UI specs</strong> -- browse the interactive gallery on port 8420</li>
+<li><strong>Review checklist</strong> -- exhaustive test inventory</li>
+<li><strong>Review TODOs</strong> -- 8-15 implementation tasks with acceptance criteria</li>
+<li><strong>Approve at the gate</strong> -- confirm to proceed to building</li>
+<li><strong>Autonomous execution</strong> -- each TODO is planned, executed, and verified</li>
+<li><strong>Final validation</strong> -- Architect, Security Reviewer, and Code Reviewer sign off</li>
+</ol>
+<div class="admonition tip">
+<p class="admonition-title">When to use</p>
+<p>Use <code>build-all</code> for greenfield projects or major features where you want the full planning treatment. For smaller tasks, use <code>autopilot</code> directly.</p>
+</div>
+<hr />
+<h2 id="planning-only">Planning Only<a class="headerlink" href="#planning-only" title="Permanent link">&para;</a></h2>
+<p><strong>Command:</strong> <code>/aether-omcc:plan-all "your idea"</code></p>
+<p>Run the full planning phase without building.</p>
+<h3 id="steps_1">Steps<a class="headerlink" href="#steps_1" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Start planning</strong> with your idea</li>
+<li><strong>Complete the deep interview</strong> (same as build-all)</li>
+<li><strong>Review all artifacts:</strong><ul>
+<li>Specification document</li>
+<li>Technical plan (from ralplan consensus)</li>
+<li>Research findings</li>
+<li>UI specifications and design tokens</li>
+<li>Exhaustive test checklist</li>
+<li>TODO list with acceptance criteria</li>
+</ul>
+</li>
+<li><strong>Iterate</strong> -- request changes to any artifact</li>
+<li><strong>Save</strong> -- all artifacts are persisted in <code>.omc/plans/</code></li>
+</ol>
+<div class="admonition tip">
+<p class="admonition-title">When to use</p>
+<p>Use <code>plan-all</code> when you want to carefully review and iterate on the plan before committing to execution, or when you want to hand the plan to a human team.</p>
+</div>
+<hr />
+<h2 id="bug-fixing">Bug Fixing<a class="headerlink" href="#bug-fixing" title="Permanent link">&para;</a></h2>
+<p><strong>Command:</strong> <code>/aether-omcc:fix-bug "symptom description"</code></p>
+<p>Structured pipeline for diagnosing and fixing bugs.</p>
+<h3 id="steps_2">Steps<a class="headerlink" href="#steps_2" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>graph LR
+    A["Reproduce"] --&gt; B["Diagnose"]
+    B --&gt; C["Plan Fix"]
+    C --&gt; D["Execute"]
+    D --&gt; E["Verify"]
+    E --&gt;|"Still broken"| B
+    E --&gt;|"Fixed"| F["Done"]</code></pre>
+<ol>
+<li><strong>Describe the symptom</strong> -- what's going wrong?</li>
+<li><strong>Reproduction</strong> -- the system attempts to reproduce the bug</li>
+<li><strong>Diagnosis</strong> -- debugger agent performs root-cause analysis</li>
+<li><strong>Plan</strong> -- planner creates a targeted fix plan</li>
+<li><strong>Execute</strong> -- executor implements the fix</li>
+<li><strong>Verify</strong> -- Playwright tests + regression checks confirm the fix</li>
+<li><strong>Loop</strong> -- if verification fails, diagnosis restarts with new evidence</li>
+</ol>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>/aether-omcc:fix-bug &quot;Users are seeing a blank screen after login on Safari&quot;
+</span></code></pre></div>
+</div>
+<hr />
+<h2 id="quick-execution">Quick Execution<a class="headerlink" href="#quick-execution" title="Permanent link">&para;</a></h2>
+<p><strong>Command:</strong> <code>/aether-omcc:autopilot "task"</code></p>
+<p>When you already know what to build and don't need the full planning phase.</p>
+<h3 id="steps_3">Steps<a class="headerlink" href="#steps_3" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Describe the task</strong> clearly</li>
+<li><strong>Requirements analysis</strong> -- quick analysis of what's needed</li>
+<li><strong>Technical design</strong> -- executor plans the implementation</li>
+<li><strong>Implementation</strong> -- code is written</li>
+<li><strong>QA cycling</strong> -- build, lint, test until all pass</li>
+<li><strong>Validation</strong> -- multi-perspective review</li>
+</ol>
+<div class="admonition tip">
+<p class="admonition-title">When to use</p>
+<p>Use <code>autopilot</code> for well-defined tasks, small features, or when you've already done planning separately with <code>plan-all</code>.</p>
+</div>
+<hr />
+<h2 id="persistence-mode">Persistence Mode<a class="headerlink" href="#persistence-mode" title="Permanent link">&para;</a></h2>
+<p><strong>Command:</strong> <code>/aether-omcc:ralph "task"</code></p>
+<p><strong>Trigger keyword:</strong> <code>ralph</code></p>
+<p>For tasks that need guaranteed completion, regardless of how long they take.</p>
+<h3 id="steps_4">Steps<a class="headerlink" href="#steps_4" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Describe the task</strong></li>
+<li><strong>Ralph loop begins</strong> -- self-referential execution loop</li>
+<li><strong>Work continues</strong> until the task is verified complete</li>
+<li><strong>Verification</strong> -- configurable reviewer checks completion</li>
+<li><strong>Loop</strong> -- if not complete, work continues automatically</li>
+</ol>
+<h3 id="key-properties">Key Properties<a class="headerlink" href="#key-properties" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Will not stop until the task is done (or explicitly cancelled)</li>
+<li>Configurable verification reviewer</li>
+<li>Handles context window limits by maintaining state across iterations</li>
+<li>Cancel with <code>/aether-omcc:cancel</code></li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">Long-running</p>
+<p>Ralph mode can run for extended periods. Make sure you have sufficient API credits and are comfortable with autonomous execution before starting.</p>
+</div>
+<hr />
+<h2 id="idea-capture">Idea Capture<a class="headerlink" href="#idea-capture" title="Permanent link">&para;</a></h2>
+<p><strong>Command:</strong> <code>/aether-omcc:table "idea"</code></p>
+<p>Store ideas during development without breaking your flow.</p>
+<h3 id="steps_5">Steps<a class="headerlink" href="#steps_5" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Table an idea</strong> while working on something else</li>
+<li>The system enriches the idea in the background</li>
+<li><strong>Ideas are persisted</strong> and can be retrieved later</li>
+<li><strong>Resume later</strong> -- pick up a tabled idea when you're ready</li>
+</ol>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>/aether-omcc:table &quot;Add email notifications for overdue tasks&quot;
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>/aether-omcc:table &quot;Consider adding a dark mode toggle&quot;
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>/aether-omcc:table &quot;The onboarding flow could use a progress indicator&quot;
+</span></code></pre></div>
+</div>
+<hr />
+<h2 id="auto-learning">Auto-Learning<a class="headerlink" href="#auto-learning" title="Permanent link">&para;</a></h2>
+<p>The system automatically extracts reusable skills from debugging sessions.</p>
+<h3 id="how-it-works">How It Works<a class="headerlink" href="#how-it-works" title="Permanent link">&para;</a></h3>
+<ol>
+<li>During a session, the system monitors debugging patterns</li>
+<li>When a pattern crosses the <strong>learning threshold</strong> (score &gt;= 85), extraction triggers</li>
+<li>The <strong>auto-writer</strong> agent creates a reusable skill definition</li>
+<li>Maximum <strong>3 skills per session</strong> to avoid noise</li>
+<li>Extracted skills are saved and available in future sessions</li>
+</ol>
+<h3 id="what-gets-learned">What Gets Learned<a class="headerlink" href="#what-gets-learned" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Common debugging patterns and their resolutions</li>
+<li>Project-specific workflows that repeat</li>
+<li>Tool usage patterns that prove effective</li>
+<li>Error handling strategies</li>
+</ul>
+<h3 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h3>
+<p>Auto-learning behavior can be configured in <code>.claude/settings.json</code>:</p>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="p">{</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="nt">&quot;omc&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="nt">&quot;autoLearning&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">      </span><span class="nt">&quot;enabled&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">      </span><span class="nt">&quot;threshold&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">85</span><span class="p">,</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">      </span><span class="nt">&quot;maxPerSession&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">  </span><span class="p">}</span>
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>See <a href="../configuration/">Configuration</a> for all available settings.</p>
+<hr />
+<h2 id="multi-agent-research">Multi-Agent Research<a class="headerlink" href="#multi-agent-research" title="Permanent link">&para;</a></h2>
+<p><strong>Command:</strong> <code>/aether-omcc:deep-research "topic"</code></p>
+<p>For thorough investigation of a technology, pattern, or approach.</p>
+<h3 id="steps_6">Steps<a class="headerlink" href="#steps_6" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Describe what to research</strong></li>
+<li><strong>Smart detection</strong> -- system identifies specific research questions</li>
+<li><strong>Parallel deployment</strong> -- 5-10 researcher agents investigate simultaneously</li>
+<li><strong>Evidence collection</strong> -- each researcher gathers documentation and examples</li>
+<li><strong>Synthesis</strong> -- orchestrator combines findings into actionable artifacts</li>
+<li><strong>Output</strong> -- research report saved to <code>.omc/research/</code></li>
+</ol>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>/aether-omcc:deep-research &quot;WebSocket scaling strategies for 100k concurrent connections&quot;
+</span></code></pre></div>
+</div>
+<hr />
+<h2 id="evidence-driven-tracing">Evidence-Driven Tracing<a class="headerlink" href="#evidence-driven-tracing" title="Permanent link">&para;</a></h2>
+<p><strong>Command:</strong> <code>/aether-omcc:trace "problem"</code></p>
+<p><strong>Trigger keyword:</strong> <code>trace</code></p>
+<p>For complex debugging that needs systematic investigation.</p>
+<h3 id="steps_7">Steps<a class="headerlink" href="#steps_7" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Describe the problem</strong></li>
+<li><strong>Hypothesis formation</strong> -- tracer generates competing hypotheses</li>
+<li><strong>Evidence gathering</strong> -- each hypothesis gets evidence for and against</li>
+<li><strong>Uncertainty tracking</strong> -- confidence levels are maintained per hypothesis</li>
+<li><strong>Probe recommendations</strong> -- tracer suggests next investigative steps</li>
+<li><strong>Convergence</strong> -- most likely root cause is identified with evidence</li>
+</ol>
+<pre class="mermaid"><code>graph TD
+    A["Problem"] --&gt; B["Hypothesis 1"]
+    A --&gt; C["Hypothesis 2"]
+    A --&gt; D["Hypothesis 3"]
+    B --&gt; E{"Evidence"}
+    C --&gt; F{"Evidence"}
+    D --&gt; G{"Evidence"}
+    E --&gt; H["Confidence: 85%"]
+    F --&gt; I["Confidence: 10%"]
+    G --&gt; J["Confidence: 5%"]
+    H --&gt; K["Root Cause"]</code></pre>
+<hr />
+<h2 id="iterative-feature-by-feature">Iterative Feature-by-Feature<a class="headerlink" href="#iterative-feature-by-feature" title="Permanent link">&para;</a></h2>
+<p><strong>Commands:</strong> <code>/aether-omcc:init-project</code> then <code>/aether-omcc:next-feature</code></p>
+<p>Build incrementally — scaffold first, then add features one at a time.</p>
+<h3 id="when-to-use">When to Use<a class="headerlink" href="#when-to-use" title="Permanent link">&para;</a></h3>
+<ul>
+<li>You want to see progress after each feature before planning the next</li>
+<li>Requirements may evolve as you build</li>
+<li>You prefer an exploratory, iterative approach over upfront planning</li>
+</ul>
+<h3 id="step-1-initialize-the-project">Step 1: Initialize the Project<a class="headerlink" href="#step-1-initialize-the-project" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>/aether-omcc:init-project<span class="w"> </span><span class="s2">&quot;recipe sharing platform with search and user profiles&quot;</span>
+</span></code></pre></div>
+<p>This runs a <strong>brief interview</strong> (3-5 questions about vision, tech stack, main features), researches the stack, generates scaffold TODOs, and builds the foundation.</p>
+<pre class="mermaid"><code>sequenceDiagram
+    participant U as User
+    participant I as Brief Interview
+    participant R as Research
+    participant T as Scaffold TODOs
+    participant B as Build
+
+    U-&gt;&gt;I: /init-project "idea"
+    I-&gt;&gt;U: 3-5 questions (vision, stack, features)
+    U-&gt;&gt;I: Answers
+    I-&gt;&gt;R: Tech stack research
+    R-&gt;&gt;T: Generate scaffold TODOs
+    T-&gt;&gt;B: Build foundation
+    B-&gt;&gt;U: Scaffold complete! Use /next-feature</code></pre>
+<p><strong>Output:</strong> Working project skeleton with base layout, auth (if needed), database setup, and a feature tracker.</p>
+<h3 id="step-2-build-features-one-at-a-time">Step 2: Build Features One at a Time<a class="headerlink" href="#step-2-build-features-one-at-a-time" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>/aether-omcc:next-feature<span class="w"> </span><span class="s2">&quot;recipe search with filters and sorting&quot;</span>
+</span></code></pre></div>
+<p>Each <code>/next-feature</code> invocation:</p>
+<pre class="mermaid"><code>sequenceDiagram
+    participant U as User
+    participant P as Short Plan
+    participant CL as Checklist
+    participant UI as UI Specs
+    participant T as TODOs
+    participant B as Build
+    participant V as Verify
+    participant Q as QA
+
+    U-&gt;&gt;P: /next-feature "feature"
+    P-&gt;&gt;U: 2-4 questions about THIS feature
+    U-&gt;&gt;P: Answers
+    P-&gt;&gt;CL: Add checklist items for feature
+    CL-&gt;&gt;U: Want UI specs?
+    U-&gt;&gt;UI: Yes/No
+    UI-&gt;&gt;T: Generate 1-3 feature TODOs
+    T-&gt;&gt;B: Build per-TODO (Plan→Execute→Verify)
+    B-&gt;&gt;V: Verify feature checklist items
+    V-&gt;&gt;Q: Build + lint + test + Playwright
+    Q-&gt;&gt;U: Feature complete! /next-feature for next</code></pre>
+<ol>
+<li><strong>Short plan</strong> — 2-4 focused questions (not full deep interview)</li>
+<li><strong>Checklist additions</strong> — Appends new test items (doesn't regenerate)</li>
+<li><strong>UI specs</strong> — Optional, reuses existing design tokens</li>
+<li><strong>Feature TODOs</strong> — 1-3 per feature, appended to existing TODOs</li>
+<li><strong>Build</strong> — Per-TODO 3-step pipeline (Plan → Execute → Verify)</li>
+<li><strong>Verify</strong> — Playwright tests feature's checklist items</li>
+<li><strong>QA</strong> — Build, lint, test, smoke test</li>
+</ol>
+<h3 id="step-3-repeat">Step 3: Repeat<a class="headerlink" href="#step-3-repeat" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>/aether-omcc:next-feature<span class="w"> </span><span class="s2">&quot;user profiles with avatar upload&quot;</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>/aether-omcc:next-feature<span class="w"> </span><span class="s2">&quot;recipe ratings and reviews&quot;</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>/aether-omcc:next-feature<span class="w"> </span><span class="s2">&quot;admin dashboard with analytics&quot;</span>
+</span></code></pre></div>
+<p>Each feature builds on the previous ones. The checklist grows incrementally. The user controls the pace.</p>
+<h3 id="comparison-with-build-all">Comparison with /build-all<a class="headerlink" href="#comparison-with-build-all" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th><code>/build-all</code></th>
+<th><code>/init-project</code> + <code>/next-feature</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Planning</td>
+<td>Exhaustive upfront</td>
+<td>Brief scaffold + short per-feature</td>
+</tr>
+<tr>
+<td>Building</td>
+<td>All TODOs at once</td>
+<td>One feature at a time</td>
+</tr>
+<tr>
+<td>Checklist</td>
+<td>Generated all at once</td>
+<td>Grows incrementally</td>
+</tr>
+<tr>
+<td>UI Specs</td>
+<td>All pages upfront</td>
+<td>Per-feature, optional</td>
+</tr>
+<tr>
+<td>Best for</td>
+<td>Clear requirements</td>
+<td>Exploratory, evolving requirements</td>
+</tr>
+<tr>
+<td>User involvement</td>
+<td>Approve plan, then hands-off</td>
+<td>Engaged between each feature</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/aether-auto/aether-omcc" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.expand", "navigation.top", "navigation.indexes", "toc.follow", "search.suggest", "search.highlight", "content.code.copy", "content.tabs.link"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
