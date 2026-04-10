@@ -278,3 +278,105 @@ graph TD
     G --> J["Confidence: 5%"]
     H --> K["Root Cause"]
 ```
+
+---
+
+## Iterative Feature-by-Feature
+
+**Commands:** `/aether-omcc:init-project` then `/aether-omcc:next-feature`
+
+Build incrementally — scaffold first, then add features one at a time.
+
+### When to Use
+
+- You want to see progress after each feature before planning the next
+- Requirements may evolve as you build
+- You prefer an exploratory, iterative approach over upfront planning
+
+### Step 1: Initialize the Project
+
+```bash
+/aether-omcc:init-project "recipe sharing platform with search and user profiles"
+```
+
+This runs a **brief interview** (3-5 questions about vision, tech stack, main features), researches the stack, generates scaffold TODOs, and builds the foundation.
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant I as Brief Interview
+    participant R as Research
+    participant T as Scaffold TODOs
+    participant B as Build
+
+    U->>I: /init-project "idea"
+    I->>U: 3-5 questions (vision, stack, features)
+    U->>I: Answers
+    I->>R: Tech stack research
+    R->>T: Generate scaffold TODOs
+    T->>B: Build foundation
+    B->>U: Scaffold complete! Use /next-feature
+```
+
+**Output:** Working project skeleton with base layout, auth (if needed), database setup, and a feature tracker.
+
+### Step 2: Build Features One at a Time
+
+```bash
+/aether-omcc:next-feature "recipe search with filters and sorting"
+```
+
+Each `/next-feature` invocation:
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant P as Short Plan
+    participant CL as Checklist
+    participant UI as UI Specs
+    participant T as TODOs
+    participant B as Build
+    participant V as Verify
+    participant Q as QA
+
+    U->>P: /next-feature "feature"
+    P->>U: 2-4 questions about THIS feature
+    U->>P: Answers
+    P->>CL: Add checklist items for feature
+    CL->>U: Want UI specs?
+    U->>UI: Yes/No
+    UI->>T: Generate 1-3 feature TODOs
+    T->>B: Build per-TODO (Plan→Execute→Verify)
+    B->>V: Verify feature checklist items
+    V->>Q: Build + lint + test + Playwright
+    Q->>U: Feature complete! /next-feature for next
+```
+
+1. **Short plan** — 2-4 focused questions (not full deep interview)
+2. **Checklist additions** — Appends new test items (doesn't regenerate)
+3. **UI specs** — Optional, reuses existing design tokens
+4. **Feature TODOs** — 1-3 per feature, appended to existing TODOs
+5. **Build** — Per-TODO 3-step pipeline (Plan → Execute → Verify)
+6. **Verify** — Playwright tests feature's checklist items
+7. **QA** — Build, lint, test, smoke test
+
+### Step 3: Repeat
+
+```bash
+/aether-omcc:next-feature "user profiles with avatar upload"
+/aether-omcc:next-feature "recipe ratings and reviews"
+/aether-omcc:next-feature "admin dashboard with analytics"
+```
+
+Each feature builds on the previous ones. The checklist grows incrementally. The user controls the pace.
+
+### Comparison with /build-all
+
+| Aspect | `/build-all` | `/init-project` + `/next-feature` |
+|--------|-------------|-----------------------------------|
+| Planning | Exhaustive upfront | Brief scaffold + short per-feature |
+| Building | All TODOs at once | One feature at a time |
+| Checklist | Generated all at once | Grows incrementally |
+| UI Specs | All pages upfront | Per-feature, optional |
+| Best for | Clear requirements | Exploratory, evolving requirements |
+| User involvement | Approve plan, then hands-off | Engaged between each feature |

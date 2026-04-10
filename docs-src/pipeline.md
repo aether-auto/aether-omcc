@@ -204,3 +204,43 @@ After all TODOs are complete, a comprehensive validation pass runs:
 | Execution | `autopilot` | Executor | Working code |
 | Verification | (built-in) | Code-simplifier, QA-tester | Test results |
 | Validation | (built-in) | Architect, Security, Code Reviewer | Final report |
+
+---
+
+## Alternative: Iterative Pipeline
+
+For users who prefer feature-by-feature development over upfront planning:
+
+```mermaid
+graph TB
+    A["init-project"] --> B["Brief Interview (3-5 questions)"]
+    B --> C["Research"]
+    C --> D["Scaffold TODOs"]
+    D --> E["Build Foundation"]
+    E --> F["next-feature (Feature 1)"]
+    F --> G["Short Plan (2-4 questions)"]
+    G --> H["Checklist Additions"]
+    H --> I["UI Specs (optional)"]
+    I --> J["Feature TODOs"]
+    J --> K["Build (Plan→Execute→Verify)"]
+    K --> L["Feature Checklist Verification"]
+    L --> M["QA Pass"]
+    M --> N{"Next feature?"}
+    N -->|Yes| F
+    N -->|No| O["Project Complete"]
+
+    style A fill:#7c3aed,stroke:#a78bfa
+    style F fill:#2563eb,stroke:#60a5fa
+    style O fill:#10b981,stroke:#34d399
+```
+
+The iterative pipeline differs from the 2-phase pipeline in that planning and building happen incrementally per feature, rather than all planning upfront followed by all building. The project checklist grows with each feature, maintaining a cumulative quality baseline.
+
+| Stage | 2-Phase (`/build-all`) | Iterative (`/init-project` + `/next-feature`) |
+|-------|----------------------|----------------------------------------------|
+| Interview | Full deep interview (0% ambiguity) | Brief 3-5 questions + 2-4 per feature |
+| Research | Full stack research | One-time stack research, reused |
+| UI Specs | All pages upfront | Per-feature, optional |
+| Checklist | Full project checklist | Incremental additions per feature |
+| TODOs | All at once (8-15) | 1-3 per feature iteration |
+| Building | All TODOs via autopilot | Per-feature with verification |
