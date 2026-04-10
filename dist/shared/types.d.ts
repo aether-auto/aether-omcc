@@ -75,6 +75,18 @@ export interface PluginConfig {
         documentSpecialist?: {
             model?: string;
         };
+        frontendDev?: {
+            model?: string;
+        };
+        backendDev?: {
+            model?: string;
+        };
+        dbDev?: {
+            model?: string;
+        };
+        researcher?: {
+            model?: string;
+        };
     };
     features?: {
         parallelExecution?: boolean;

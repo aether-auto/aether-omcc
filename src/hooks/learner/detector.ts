@@ -10,7 +10,7 @@ export interface DetectionResult {
   /** Confidence score (0-100) */
   confidence: number;
   /** Type of pattern detected */
-  patternType: 'problem-solution' | 'technique' | 'workaround' | 'optimization' | 'best-practice';
+  patternType: 'problem-solution' | 'technique' | 'workaround' | 'optimization' | 'best-practice' | 'auto-fix';
   /** Suggested trigger keywords */
   suggestedTriggers: string[];
   /** Reason for detection */
@@ -162,6 +162,35 @@ const DETECTION_PATTERNS = [
     ],
     confidence: 75,
   },
+  // Auto-fix patterns: sequences where a hard-won solution was found
+  {
+    type: 'auto-fix' as const,
+    patterns: [
+      // English — clear problem-solution pairs (high confidence)
+      /the issue was .{5,}(?:the fix is|the solution is|to fix it|fixed it by)/i,
+      /the fix is .{5,}/i,
+      /(?:after (?:trying|attempting|several|multiple) .{5,})(?:finally|eventually|the solution)/i,
+      /(?:turned out|it turns out) .{5,}(?:instead|you need to|the correct way)/i,
+      // Non-obvious workaround indicators
+      /instead of .{5,}(?:you (?:need|have|should|must) to)/i,
+      /(?:counterintuitively|surprisingly|unexpectedly) .{5,}/i,
+      /the trick is .{5,}/i,
+      /(?:workaround|the workaround) (?:is|was) .{5,}/i,
+      // Chinese
+      /(?:问题出在|原因是).{5,}(?:解决方法是|修复方法是|需要)/,
+      /(?:诀窍是|关键是|技巧在于).{5,}/,
+      // Korean
+      /(?:문제는|원인은).{5,}(?:해결 방법은|수정 방법은)/,
+      /(?:요령은|핵심은|비결은).{5,}/,
+      // Japanese
+      /(?:問題は|原因は).{5,}(?:解決方法は|修正方法は)/,
+      /(?:コツは|ポイントは|秘訣は).{5,}/,
+      // Spanish
+      /(?:el problema era|la causa era).{5,}(?:la solución es|para arreglarlo)/i,
+      /(?:el truco es|la clave es|contraintuitivamente).{5,}/i,
+    ],
+    confidence: 85,
+  },
 ];
 
 /**
@@ -240,7 +269,23 @@ export function detectExtractableMoment(
 
   // Boost confidence if multiple triggers found
   const triggerBoost = Math.min(suggestedTriggers.length * 5, 15);
-  const finalConfidence = Math.min(bestMatch.confidence + triggerBoost, 100);
+  let finalConfidence = bestMatch.confidence + triggerBoost;
+
+  // Boost for project-specific file paths (from current working directory)
+  const cwd = process.cwd();
+  const cwdPattern = new RegExp(cwd.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+  if (cwdPattern.test(assistantMessage)) {
+    finalConfidence += 10;
+  }
+
+  // Boost for clear "the issue was" + "the fix is" combinations (problem-solution pair)
+  const hasIssueWas = /the (?:issue|problem|bug) was/i.test(assistantMessage);
+  const hasFixIs = /the (?:fix|solution|answer) (?:is|was)/i.test(assistantMessage);
+  if (hasIssueWas && hasFixIs) {
+    finalConfidence = Math.max(finalConfidence, 90);
+  }
+
+  finalConfidence = Math.min(finalConfidence, 100);
 
   return {
     detected: true,
@@ -271,6 +316,7 @@ export function generateExtractionPrompt(detection: DetectionResult): string {
     'workaround': 'a workaround for a limitation',
     'optimization': 'an optimization approach',
     'best-practice': 'a best practice',
+    'auto-fix': 'a hard-won fix discovered through debugging',
   };
 
   return `

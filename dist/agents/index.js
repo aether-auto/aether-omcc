@@ -27,6 +27,8 @@ export { debuggerAgent, verifierAgent } from './definitions.js';
 export { testEngineerAgent } from './definitions.js';
 // Specialized agents (Security, Code Review, Git, Code Simplifier)
 export { securityReviewerAgent, codeReviewerAgent, gitMasterAgent, codeSimplifierAgent } from './definitions.js';
+// Aether-OMCC development team agents
+export { frontendDevAgent, backendDevAgent, dbDevAgent, researcherAgent } from './definitions.js';
 // Core exports (getAgentDefinitions and omcSystemPrompt)
 export { getAgentDefinitions, omcSystemPrompt } from './definitions.js';
 //# sourceMappingURL=index.js.map

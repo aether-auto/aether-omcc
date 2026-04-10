@@ -24,3 +24,7 @@ benchmarks/harsh-critic/scoring/*.d.ts.map
 
 # Release body is generated dynamically — never commit stale copies
 .github/release-body.md
+
+# MkDocs build output
+site/
+site/

@@ -6,6 +6,8 @@
  */
 
 import { createHash } from "crypto";
+import { shouldAutoCreate, autoCreateSkill, isDuplicateOnDisk } from "./auto-writer.js";
+import { DEBUG_ENABLED } from "./constants.js";
 import type { SkillMetadata } from "./types.js";
 
 const ABSOLUTE_PATH_PATTERN =
@@ -359,11 +361,15 @@ export function calculateSkillWorthiness(pattern: PatternDetection): number {
 /**
  * Record a problem-solution pair.
  * Returns the pattern if it's new or updated, null if ignored.
+ *
+ * If the pattern's confidence is >= 85 and rate limits allow,
+ * it will be auto-created as a project-scoped skill without user confirmation.
  */
 export function recordPattern(
   state: AutoLearnerState,
   problem: string,
   solution: string,
+  projectRoot?: string | null,
 ): PatternDetection | null {
   // Basic validation
   if (!problem || !solution) {
@@ -388,6 +394,20 @@ export function recordPattern(
     existingPattern.occurrences++;
     existingPattern.lastSeen = Date.now();
     existingPattern.confidence = calculateSkillWorthiness(existingPattern);
+
+    // Try auto-creation if confidence is now high enough
+    if (projectRoot && shouldAutoCreate(existingPattern.confidence)) {
+      // Check for duplicate triggers on disk (>50% overlap)
+      if (!isDuplicateOnDisk(existingPattern.suggestedTriggers, projectRoot)) {
+        const createdPath = autoCreateSkill(existingPattern, projectRoot);
+        if (createdPath && DEBUG_ENABLED) {
+          console.log(
+            '[learner:auto-learner] Auto-created skill from updated pattern: %s',
+            createdPath,
+          );
+        }
+      }
+    }
 
     // Re-evaluate for suggestion
     if (
@@ -422,7 +442,21 @@ export function recordPattern(
   // Store pattern
   state.patterns.set(hash, newPattern);
 
-  // Add to suggestions if worthy
+  // Try auto-creation for high-confidence new patterns
+  if (projectRoot && shouldAutoCreate(newPattern.confidence)) {
+    // Check for duplicate triggers on disk (>50% overlap)
+    if (!isDuplicateOnDisk(newPattern.suggestedTriggers, projectRoot)) {
+      const createdPath = autoCreateSkill(newPattern, projectRoot);
+      if (createdPath && DEBUG_ENABLED) {
+        console.log(
+          '[learner:auto-learner] Auto-created skill from new pattern: %s',
+          createdPath,
+        );
+      }
+    }
+  }
+
+  // Add to suggestions if worthy (existing behavior)
   if (newPattern.confidence >= DEFAULT_SUGGESTION_THRESHOLD) {
     state.suggestedSkills.push(newPattern);
   }

@@ -21,6 +21,7 @@ export * from "./validator.js";
 export * from "./writer.js";
 export * from "./detector.js";
 export * from "./detection-hook.js";
+export * from "./auto-writer.js";
 export * from "./promotion.js";
 export * from "./config.js";
 export * from "./matcher.js";

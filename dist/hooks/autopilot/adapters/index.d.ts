@@ -5,6 +5,10 @@
  * (ralplan, team, ralph, ultraqa) into the PipelineStageAdapter interface.
  */
 export { ralplanAdapter, RALPLAN_COMPLETION_SIGNAL } from './ralplan-adapter.js';
+export { uiSpecsAdapter, UI_SPECS_COMPLETION_SIGNAL } from './ui-specs-adapter.js';
+export { researchAdapter, RESEARCH_COMPLETION_SIGNAL } from './research-adapter.js';
+export { checklistAdapter, CHECKLIST_COMPLETION_SIGNAL } from './checklist-adapter.js';
+export { todosAdapter, TODOS_COMPLETION_SIGNAL } from './todos-adapter.js';
 export { executionAdapter, EXECUTION_COMPLETION_SIGNAL } from './execution-adapter.js';
 export { ralphAdapter, RALPH_COMPLETION_SIGNAL } from './ralph-adapter.js';
 export { qaAdapter, QA_COMPLETION_SIGNAL } from './qa-adapter.js';

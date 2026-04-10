@@ -56,6 +56,14 @@ export {
   codeSimplifierAgent
 } from './definitions.js';
 
+// Aether-OMCC development team agents
+export {
+  frontendDevAgent,
+  backendDevAgent,
+  dbDevAgent,
+  researcherAgent
+} from './definitions.js';
+
 // Core exports (getAgentDefinitions and omcSystemPrompt)
 export {
   getAgentDefinitions,

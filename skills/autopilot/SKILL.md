@@ -49,27 +49,106 @@ Most non-trivial software tasks require coordinated phases: understanding requir
    - Critic (Opus): Validate plan
    - Output: `.omc/plans/autopilot-impl.md`
 
-3. **Phase 2 - Execution**: Implement the plan using Ralph + Ultrawork
-   - Executor (Haiku): Simple tasks
-   - Executor (Sonnet): Standard tasks
-   - Executor (Opus): Complex tasks
-   - Run independent tasks in parallel
+3. **Phase 2 - Execution**: Implement TODOs using 3-step pipeline per TODO (Plan → Execute → Verify)
+   - **Read `.omc/todos/INDEX.md`** to get the full dependency DAG and TODO inventory
+   - **Identify unblocked TODOs**: TODOs whose dependencies are all `status: done` (or have no dependencies)
+   - **For EACH unblocked TODO, run the 3-step pipeline:**
+     1. **Plan** — Spawn a fresh planner subagent with ONLY the TODO file and CLAUDE.md. Creates a focused implementation plan.
+     2. **Execute** — Spawn `executor` agent(s) to implement the plan. Single executor for simple TODOs, team of 2-3 executors for complex TODOs. ALWAYS use `executor` — no specialist agents.
+     3. **Verify** — Two parallel agents: code-simplifier reviews code quality, qa-tester runs Playwright tests from the TODO's `## Playwright Verification` section.
+   - **Mark TODOs complete** when all acceptance criteria pass and Playwright verification passes: update frontmatter `status: done`
+   - **Repeat**: After a batch completes, re-read INDEX.md to find newly unblocked TODOs
+   - **Continue until all TODOs are `status: done`**
+   - See **Per-TODO 3-Step Execution Pipeline** below
 
 4. **Phase 3 - QA**: Cycle until all tests pass (UltraQA mode)
    - Build, lint, test, fix failures
    - Repeat up to 5 cycles
    - Stop early if the same error repeats 3 times (indicates a fundamental issue)
 
-5. **Phase 4 - Validation**: Multi-perspective review in parallel
-   - Architect: Functional completeness
-   - Security-reviewer: Vulnerability check
-   - Code-reviewer: Quality review
+5. **Phase 4 - Validation**: Multi-perspective review + Playwright checklist in parallel
+   - Architect (model="sonnet"): Functional completeness
+   - Security-reviewer (model="sonnet"): Vulnerability check
+   - Code-reviewer (model="sonnet"): Quality review
+   - QA-tester (model="sonnet"): Project-wide Playwright checklist testing — reads `.omc/checklists/project-checklist.md` and tests EVERY item using Playwright MCP browser tools, reporting a complete PASS/FAIL list as the final quality gate
    - All must approve; fix and re-validate on rejection
 
 6. **Phase 5 - Cleanup**: Delete all state files on successful completion
    - Remove `.omc/state/autopilot-state.json`, `ralph-state.json`, `ultrawork-state.json`, `ultraqa-state.json`
    - Run `/oh-my-claudecode:cancel` for clean exit
 </Steps>
+
+<Per_TODO_Execution_Pipeline>
+### Per-TODO 3-Step Execution Pipeline
+
+For EACH unblocked TODO, run these 3 steps in sequence:
+
+#### Step 1: Plan (Fresh Context)
+Spawn a planner subagent with ONLY the TODO file and CLAUDE.md. No prior conversation context.
+- Agent reads TODO-NNN.md (acceptance criteria, description, references)
+- Agent reads project CLAUDE.md for conventions
+- Agent outputs a focused implementation plan: files to create/modify, approach, edge cases
+- This ensures each TODO gets thoughtful planning, not just code generation
+
+#### Step 2: Execute
+Spawn executor agent(s) to implement the plan.
+- ALWAYS use `executor` agent — no specialist agents (no frontend-dev, backend-dev, db-dev)
+- For simple TODOs: single executor (model="sonnet")
+- For complex TODOs: team of 2-3 executors working on different parts (model="sonnet")
+- Executor receives: the plan from Step 1, the TODO's acceptance criteria, reference implementations
+- CRITICAL: Executor must deliver COMPLETE, WORKING code — not scaffolding or stubs
+  - All data must be real/realistic, not placeholder
+  - All integrations must be wired up end-to-end
+  - All UI must be functional and interactive
+  - All API endpoints must return real data
+
+#### Step 3: Verify (Parallel)
+Two agents run in parallel with clean context:
+
+a. **Code Cleanup** (code-simplifier, model="sonnet"):
+   - Review all changes from Step 2
+   - Improve code quality, consistency, naming
+   - Remove dead code, debug artifacts
+   - Ensure project conventions from CLAUDE.md are followed
+
+b. **Playwright Testing** (qa-tester, model="sonnet"):
+   - Read the TODO's `## Playwright Verification` section
+   - Use Playwright MCP tools to test each item
+   - For web apps: browser_navigate, browser_click, browser_fill_form, browser_snapshot, browser_take_screenshot
+   - For Electron apps: use playwright-electron MCP tools
+   - Report PASS/FAIL for each verification item
+   - If FAIL: iterate — fix and retest (max 3 attempts)
+
+**Overall Loop:**
+
+```
+1. READ .omc/todos/INDEX.md → parse dependency DAG and all TODO statuses
+2. IDENTIFY unblocked TODOs:
+   - status: pending
+   - all entries in depends_on[] have status: done (or depends_on is empty)
+3. If no unblocked TODOs remain AND some TODOs are still pending → ERROR: circular dependency or blocked chain
+4. If all TODOs have status: done → EXIT loop, emit PIPELINE_EXECUTION_COMPLETE
+5. For EACH unblocked TODO, run the 3-step pipeline (Step 1 → Step 2 → Step 3)
+6. Update TODO frontmatter: status: done (or status: blocked after 3 failures)
+7. UPDATE .omc/todos/INDEX.md with new statuses
+8. GOTO step 1 (next iteration picks up newly unblocked TODOs)
+```
+
+**Failure Handling:**
+- If a TODO fails 3 times: mark as `status: blocked`, log the error, continue with other TODOs
+- If a blocked TODO is in the critical path (other TODOs depend on it): report to user via AskUserQuestion
+- If all remaining TODOs are blocked: stop and present the blockers to the user
+
+**Progress Reporting:**
+After each iteration of the loop, report:
+```
+Execution Progress: {completed}/{total} TODOs
+  Completed this round: TODO-003, TODO-005, TODO-007
+  Now unblocked: TODO-008, TODO-009
+  Blocked: TODO-004 (failed 3x: {error summary})
+  Remaining: {count} TODOs
+```
+</Per_TODO_Execution_Pipeline>
 
 <Tool_Usage>
 - Use `Task(subagent_type="oh-my-claudecode:architect", ...)` for Phase 4 architecture validation
@@ -111,6 +190,8 @@ Why bad: This is an exploration/brainstorming request. Respond conversationally 
 <Final_Checklist>
 - [ ] All 5 phases completed (Expansion, Planning, Execution, QA, Validation)
 - [ ] All validators approved in Phase 4
+- [ ] Playwright verification passed for each TODO (Step 3 of per-TODO pipeline)
+- [ ] Project-wide checklist tested via Playwright (Phase 4 qa-tester)
 - [ ] Tests pass (verified with fresh test run output)
 - [ ] Build succeeds (verified with fresh build output)
 - [ ] State files cleaned up

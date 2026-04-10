@@ -31,6 +31,22 @@ export declare const debuggerAgent: AgentConfig;
  */
 export declare const verifierAgent: AgentConfig;
 /**
+ * Frontend Dev Agent - UI implementation specialist (Sonnet)
+ */
+export declare const frontendDevAgent: AgentConfig;
+/**
+ * Backend Dev Agent - API and business logic specialist (Sonnet)
+ */
+export declare const backendDevAgent: AgentConfig;
+/**
+ * DB Dev Agent - Database specialist (Sonnet)
+ */
+export declare const dbDevAgent: AgentConfig;
+/**
+ * Researcher Agent - Read-only research sub-agent (Sonnet)
+ */
+export declare const researcherAgent: AgentConfig;
+/**
  * Test-Engineer Agent - Test Strategy & Coverage (Sonnet)
  * Replaces: tdd-guide agent
  */

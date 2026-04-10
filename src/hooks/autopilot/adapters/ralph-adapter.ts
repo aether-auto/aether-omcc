@@ -43,7 +43,7 @@ Spawn parallel verification reviewers:
 // Functional Completeness Review
 Task(
   subagent_type="oh-my-claudecode:architect",
-  model="opus",
+  model="sonnet",
   prompt="FUNCTIONAL COMPLETENESS REVIEW
 
 Read the original spec at: ${specPath}
@@ -60,7 +60,7 @@ Verdict: APPROVED (all requirements met) or REJECTED (with specific gaps)"
 // Security Review
 Task(
   subagent_type="oh-my-claudecode:security-reviewer",
-  model="opus",
+  model="sonnet",
   prompt="SECURITY REVIEW
 
 Check the implementation for:
@@ -77,7 +77,7 @@ Verdict: APPROVED (no vulnerabilities) or REJECTED (with specific issues)"
 // Code Quality Review
 Task(
   subagent_type="oh-my-claudecode:code-reviewer",
-  model="opus",
+  model="sonnet",
   prompt="CODE QUALITY REVIEW
 
 Review the implementation for:
@@ -88,6 +88,23 @@ Review the implementation for:
 5. Maintainability and readability
 
 Verdict: APPROVED (high quality) or REJECTED (with specific issues)"
+)
+
+// Project-wide Playwright Checklist Testing
+Task(
+  subagent_type="aether-omcc:qa-tester",
+  model="sonnet",
+  prompt="PROJECT-WIDE PLAYWRIGHT CHECKLIST
+
+Read the full project checklist at .omc/checklists/project-checklist.md.
+Test EVERY item using Playwright MCP browser tools:
+- For web apps: browser_navigate, browser_click, browser_fill_form, browser_snapshot, browser_take_screenshot
+- For Electron apps: use playwright-electron MCP tools
+
+Report a complete PASS/FAIL list for each checklist item.
+This is the final quality gate before approval.
+
+Verdict: APPROVED (all items pass) or REJECTED (with specific failures)"
 )
 \`\`\`
 

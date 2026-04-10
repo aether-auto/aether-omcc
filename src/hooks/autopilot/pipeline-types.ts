@@ -3,7 +3,7 @@
  *
  * Type definitions for the configurable pipeline orchestrator.
  * The pipeline unifies autopilot/ultrawork/ultrapilot into a single
- * configurable sequence: RALPLAN -> EXECUTION -> RALPH -> QA.
+ * configurable sequence: RALPLAN -> RESEARCH -> UI-SPECS -> TODOS -> EXECUTION -> RALPH -> QA.
  *
  * @see https://github.com/Yeachan-Heo/oh-my-claudecode/issues/1130
  */
@@ -16,7 +16,7 @@
  * Pipeline stage identifiers in execution order.
  * Each stage is optional and can be skipped via configuration.
  */
-export type PipelineStageId = "ralplan" | "execution" | "ralph" | "qa";
+export type PipelineStageId = "ralplan" | "research" | "ui-specs" | "checklist" | "todos" | "execution" | "ralph" | "qa";
 
 /** Terminal pipeline states */
 export type PipelineTerminalState = "complete" | "failed" | "cancelled";
@@ -35,6 +35,10 @@ export type StageStatus =
 /** The canonical stage execution order */
 export const STAGE_ORDER: readonly PipelineStageId[] = [
   "ralplan",
+  "research",
+  "ui-specs",
+  "checklist",
+  "todos",
   "execution",
   "ralph",
   "qa",

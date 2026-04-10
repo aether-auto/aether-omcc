@@ -19,7 +19,22 @@ export interface DetectionConfig {
  * Process assistant response for skill detection.
  * Returns prompt text if extraction should be suggested, null otherwise.
  */
-export declare function processResponseForDetection(assistantMessage: string, userMessage: string | undefined, sessionId: string, config?: Partial<DetectionConfig>): string | null;
+export declare function processResponseForDetection(assistantMessage: string, userMessage: string | undefined, sessionId: string, config?: Partial<DetectionConfig>, projectRoot?: string | null): string | null;
+/**
+ * Record a tool use failure (for auto-fix pattern detection).
+ * Call when a tool use fails (PostToolUseFailure).
+ */
+export declare function recordToolFailure(sessionId: string): void;
+/**
+ * Record a tool use success (for auto-fix pattern detection).
+ * Call when a tool use succeeds after failures (PostToolUse).
+ * Returns true if this was a failure-then-success sequence.
+ */
+export declare function recordToolSuccess(sessionId: string): boolean;
+/**
+ * Get list of auto-created skill paths for a session.
+ */
+export declare function getAutoCreatedPaths(sessionId: string): string[];
 /**
  * Get the last detection result for a session.
  */

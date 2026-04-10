@@ -61,6 +61,49 @@ export const verifierAgent = {
     defaultModel: 'sonnet'
 };
 // ============================================================
+// AETHER-OMCC DEVELOPMENT TEAM AGENTS
+// ============================================================
+/**
+ * Frontend Dev Agent - UI implementation specialist (Sonnet)
+ */
+export const frontendDevAgent = {
+    name: 'frontend-dev',
+    description: 'Frontend implementation — React, CSS, components, pages, client-side logic (Sonnet).',
+    prompt: loadAgentPrompt('frontend-dev'),
+    model: 'sonnet',
+    defaultModel: 'sonnet'
+};
+/**
+ * Backend Dev Agent - API and business logic specialist (Sonnet)
+ */
+export const backendDevAgent = {
+    name: 'backend-dev',
+    description: 'Backend implementation — APIs, services, middleware, business logic (Sonnet).',
+    prompt: loadAgentPrompt('backend-dev'),
+    model: 'sonnet',
+    defaultModel: 'sonnet'
+};
+/**
+ * DB Dev Agent - Database specialist (Sonnet)
+ */
+export const dbDevAgent = {
+    name: 'db-dev',
+    description: 'Database specialist — schema, migrations, queries, seeds, optimization (Sonnet).',
+    prompt: loadAgentPrompt('db-dev'),
+    model: 'sonnet',
+    defaultModel: 'sonnet'
+};
+/**
+ * Researcher Agent - Read-only research sub-agent (Sonnet)
+ */
+export const researcherAgent = {
+    name: 'researcher',
+    description: 'Research sub-agent — documentation, pattern discovery, best practices. Read-only (Sonnet).',
+    prompt: loadAgentPrompt('researcher'),
+    model: 'sonnet',
+    defaultModel: 'sonnet'
+};
+// ============================================================
 // REFORMED AGENTS (REVIEW LANE)
 // ============================================================
 // ============================================================
@@ -147,6 +190,10 @@ const AGENT_CONFIG_KEY_MAP = {
     'code-simplifier': 'codeSimplifier',
     critic: 'critic',
     'document-specialist': 'documentSpecialist',
+    'frontend-dev': 'frontendDev',
+    'backend-dev': 'backendDev',
+    'db-dev': 'dbDev',
+    researcher: 'researcher',
 };
 function getConfiguredAgentModel(name, config) {
     const key = AGENT_CONFIG_KEY_MAP[name];
@@ -200,6 +247,13 @@ export function getAgentDefinitions(options) {
         tracer: tracerAgent,
         'git-master': gitMasterAgent,
         'code-simplifier': codeSimplifierAgent,
+        // ============================================================
+        // DEVELOPMENT TEAM (aether-omcc extensions)
+        // ============================================================
+        'frontend-dev': frontendDevAgent,
+        'backend-dev': backendDevAgent,
+        'db-dev': dbDevAgent,
+        researcher: researcherAgent,
         // ============================================================
         // COORDINATION
         // ============================================================

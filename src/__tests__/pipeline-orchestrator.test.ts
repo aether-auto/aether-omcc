@@ -107,9 +107,9 @@ describe('Pipeline Orchestrator', () => {
   // =========================================================================
 
   describe('buildPipelineTracking', () => {
-    it('creates 4 stages matching STAGE_ORDER', () => {
+    it('creates 8 stages matching STAGE_ORDER', () => {
       const tracking = buildPipelineTracking(DEFAULT_PIPELINE_CONFIG);
-      expect(tracking.stages).toHaveLength(4);
+      expect(tracking.stages).toHaveLength(8);
       expect(tracking.stages.map(s => s.id)).toEqual(STAGE_ORDER);
     });
 
@@ -172,7 +172,7 @@ describe('Pipeline Orchestrator', () => {
       tracking.stages[0].status = 'active';
       const next = getNextStageAdapter(tracking);
       expect(next).not.toBeNull();
-      expect(next!.id).toBe('execution');
+      expect(next!.id).toBe('research');
     });
 
     it('returns null when pipeline is complete', () => {
@@ -206,11 +206,11 @@ describe('Pipeline Orchestrator', () => {
   });
 
   describe('advanceStage', () => {
-    it('advances from ralplan to execution', () => {
+    it('advances from ralplan to research', () => {
       initPipeline(testDir, 'task', 'sess-3');
       const result = advanceStage(testDir, 'sess-3');
       expect(result.adapter).not.toBeNull();
-      expect(result.phase).toBe('execution');
+      expect(result.phase).toBe('research');
     });
 
     it('returns complete after all stages', () => {
@@ -253,7 +253,7 @@ describe('Pipeline Orchestrator', () => {
 
       const status = getPipelineStatus(tracking);
       expect(status.completedStages).toContain('ralplan');
-      expect(status.currentStage).toBe('execution');
+      expect(status.currentStage).toBe('research');
       expect(status.isComplete).toBe(false);
       expect(status.progress).toContain('/');
     });
@@ -298,7 +298,7 @@ describe('Pipeline Orchestrator', () => {
 
   describe('constants', () => {
     it('STAGE_ORDER has correct sequence', () => {
-      expect(STAGE_ORDER).toEqual(['ralplan', 'execution', 'ralph', 'qa']);
+      expect(STAGE_ORDER).toEqual(['ralplan', 'research', 'ui-specs', 'checklist', 'todos', 'execution', 'ralph', 'qa']);
     });
 
     it('DEPRECATED_MODE_ALIASES has ultrawork and ultrapilot', () => {
