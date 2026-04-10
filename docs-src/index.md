@@ -29,7 +29,7 @@ Aether OMCC is an extended fork of [oh-my-claudecode](https://github.com/nicobai
 
     [:octicons-arrow-right-24: Agents Reference](agents.md)
 
-- :material-tools:{ .lg .middle } **40+ Skills**
+- :material-tools:{ .lg .middle } **42+ Skills**
 
     ---
 
@@ -79,6 +79,7 @@ Aether OMCC is an extended fork of [oh-my-claudecode](https://github.com/nicobai
 | **Auto-Learning** | Extracts reusable skills from debugging (threshold 85, max 3/session) |
 | **Fix-Bug Pipeline** | Reproduce, diagnose, plan, execute, verify -- structured bug resolution |
 | **Idea Capture** | `/table` stores enriched ideas in the background without stopping work |
+| **Iterative Workflow** | `/init-project` scaffolds, then `/next-feature` builds one feature at a time |
 
 ---
 
@@ -91,6 +92,11 @@ claude plugin install aether-omcc@aether-omcc
 
 # Run the full pipeline
 /aether-omcc:build-all "your idea here"
+
+# Or use the iterative workflow
+/aether-omcc:init-project "your idea here"
+# Then add features one at a time
+/aether-omcc:next-feature "user dashboard"
 ```
 
 [:octicons-arrow-right-24: Full installation guide](getting-started.md)
@@ -120,7 +126,22 @@ graph TB
     O -->|Yes| P["Final Validation"]
     P --> Q["Working Code"]
 
+    A2["User Idea (Iterative)"] --> B2["init-project"]
+    B2 --> C2["Brief Interview"]
+    C2 --> D2["Research"]
+    D2 --> E2["Scaffold TODOs"]
+    E2 --> F2["Build Foundation"]
+    F2 --> G2["next-feature (repeat)"]
+    G2 --> H2["Short Plan"]
+    H2 --> I2["Checklist Additions"]
+    I2 --> J2["UI Specs (optional)"]
+    J2 --> K2["Feature TODOs"]
+    K2 --> L2["Build + Verify + QA"]
+    L2 --> G2
+
     style A fill:#7c3aed,stroke:#a78bfa
     style I fill:#f59e0b,stroke:#fbbf24
     style Q fill:#10b981,stroke:#34d399
+    style A2 fill:#7c3aed,stroke:#a78bfa
+    style G2 fill:#2563eb,stroke:#60a5fa
 ```

@@ -76,6 +76,19 @@ When you already know what to build:
 /aether-omcc:autopilot "Add dark mode toggle to the settings page"
 ```
 
+### Option B: Iterative Workflow
+
+If you prefer to build feature-by-feature:
+
+```bash
+# Scaffold the project
+/aether-omcc:init-project "your idea here"
+
+# Add features one at a time
+/aether-omcc:next-feature "first feature"
+/aether-omcc:next-feature "second feature"
+```
+
 ### Fix a Bug
 
 ```

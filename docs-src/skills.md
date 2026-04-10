@@ -34,6 +34,34 @@ Produces all planning artifacts (spec, plan, research, UI specs, checklist, TODO
 
 ---
 
+### init-project
+
+Iterative workflow kickoff — scaffold a project foundation.
+
+```
+/aether-omcc:init-project "Build a recipe sharing platform"
+```
+
+Alternative to `build-all` for users who prefer to work feature-by-feature. Runs a brief 3-5 question interview (not a full deep interview), researches the tech stack, generates scaffold TODOs (project setup, base layout, auth, DB), and builds the foundation. Then use `/next-feature` to add features one at a time.
+
+**Pipeline:** `brief interview` -> `research` -> `scaffold TODOs` -> `build` -> `feature tracker`
+
+---
+
+### next-feature
+
+Build one feature at a time in an existing project.
+
+```
+/aether-omcc:next-feature "user dashboard with task list and analytics"
+```
+
+Per-feature iteration command used after `/init-project`. Each invocation runs a short 2-4 question planning interview, adds to the project checklist, optionally generates UI specs, creates feature TODOs, builds them with the per-TODO pipeline, verifies against the feature's checklist items, and runs a short QA pass.
+
+**Pipeline:** `short plan` -> `checklist additions` -> `UI specs (optional)` -> `feature TODOs` -> `build` -> `verify checklist` -> `QA`
+
+---
+
 ### autopilot
 
 Full autonomous execution from idea to working code.
@@ -533,6 +561,8 @@ Handles versioning, changelog generation, and release publication for the plugin
 |-------|---------|----------|
 | `build-all` | `/aether-omcc:build-all` | Pipeline |
 | `plan-all` | `/aether-omcc:plan-all` | Pipeline |
+| `init-project` | `/aether-omcc:init-project` | Pipeline |
+| `next-feature` | `/aether-omcc:next-feature` | Pipeline |
 | `autopilot` | `/aether-omcc:autopilot` | Pipeline |
 | `plan` | `/aether-omcc:plan` | Planning |
 | `deep-interview` | `/aether-omcc:deep-interview` | Interview |
